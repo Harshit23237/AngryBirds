@@ -1,0 +1,160 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "D:/Projects/AngryBirdsGame2027/assets/bonus_level.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "D:/GOLDEN_EGGS_SHEET_1.tsx": {
+            "scaleInDock": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/GOLDEN_EGGS_SHEET_1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 0.75
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BIRDS_1.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BLOCKS_1.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BLOCKS_2.tsx": {
+            "scaleInDock": 0.25,
+            "scaleInEditor": 0.125
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_GROUNDS_1.tsx": {
+            "scaleInDock": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_PARALLAX_7.tsx": {
+            "scaleInDock": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_SKIES_2.tsx": {
+            "scaleInDock": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_THEME_GROUND_6.tsx": {
+            "scaleInDock": 1
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/Level_1.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
+            "scale": 0.33,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 1387.8787878787878,
+                "y": 828.787878787879
+            }
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/Level_2.tmx": {
+            "expandedObjectLayers": [
+                6,
+                7
+            ],
+            "scale": 0.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1280,
+                "y": 719
+            }
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/Level_3 (2).tmx": {
+            "scale": 0.48203703703703704,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 960.5071071840183,
+                "y": 810.1037264694583
+            }
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/Level_3.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 1141.3333333333335,
+                "y": 664.6666666666666
+            }
+        },
+        "D:/Projects/AngryBirdsGame2027/assets/bonus_level.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 578,
+                "y": 83
+            }
+        },
+        "GOLDEN_EGGS_SHEET_1.tsx": {
+            "scaleInDock": 1
+        },
+        "INGAME_BIRDS_1.tsx": {
+            "scaleInDock": 3
+        },
+        "INGAME_BLOCKS_1.tsx": {
+            "scaleInDock": 4
+        },
+        "INGAME_BLOCKS_2.tsx": {
+            "scaleInDock": 0.75
+        },
+        "INGAME_GROUNDS_1.tsx": {
+            "scaleInDock": 0.5
+        },
+        "INGAME_PARALLAX_7.tsx": {
+            "scaleInDock": 1
+        },
+        "INGAME_SKIES_2.tsx": {
+            "scaleInDock": 1
+        },
+        "INGAME_THEME_GROUND_6.tsx": {
+            "scaleInDock": 1
+        },
+        "untitled.tmx": {
+            "expandedObjectLayers": [
+                12,
+                13
+            ],
+            "scale": 0.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 946,
+                "y": 1297
+            }
+        }
+    },
+    "last.imagePath": "C:/Users/harsh/Downloads/Sentfile2/send file",
+    "map.height": 540,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 2,
+    "map.tileWidth": 2,
+    "map.width": 980,
+    "openFiles": [
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BLOCKS_2.tsx",
+        "untitled.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/Level_2.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BIRDS_1.tsx",
+        "D:/Projects/AngryBirdsGame2027/assets/GOLDEN_EGGS_SHEET_1.tsx",
+        "D:/Projects/AngryBirdsGame2027/assets/Level_1.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/bonus_level.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BLOCKS_1.tsx"
+    ],
+    "project": "Level3.tiled-project",
+    "recentFiles": [
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BLOCKS_2.tsx",
+        "untitled.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/Level_2.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BIRDS_1.tsx",
+        "D:/Projects/AngryBirdsGame2027/assets/GOLDEN_EGGS_SHEET_1.tsx",
+        "D:/Projects/AngryBirdsGame2027/assets/Level_1.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/INGAME_BLOCKS_1.tsx",
+        "D:/Projects/AngryBirdsGame2027/assets/bonus_level.tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/Level_3 (2).tmx",
+        "D:/Projects/AngryBirdsGame2027/assets/Level_3.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 2,
+        "width": 2
+    }
+}
