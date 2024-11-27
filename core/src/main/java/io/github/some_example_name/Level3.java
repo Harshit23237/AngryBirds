@@ -26,7 +26,6 @@ import io.github.Game.TutorialGame;
 import java.util.ArrayList;
 
 public class Level3 extends ScreenAdapter {
-
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
@@ -61,9 +60,9 @@ public class Level3 extends ScreenAdapter {
     private TiledMap tiledMap;
 //    =====
 
-    private Vector2 dragStart;   // Where the drag starts
-    private Vector2 dragEnd;     // Where the drag ends
-    private boolean isDragging;  // If the bird is being dragged
+    private Vector2 dragStart;
+    private Vector2 dragEnd;
+    private boolean isDragging;
 
     private Vector2 GRAVITY;
     private ShapeRenderer shapeRenderer;
@@ -77,6 +76,15 @@ public class Level3 extends ScreenAdapter {
 
     private Game game;
 
+    private ArrayList<Bird> birds;
+    private int currentBirdIndex;
+    private Bird firstBird;
+    private ArrayList<Bird> birdsToRemove = new ArrayList<>();
+
+    private float birdInactiveTime = 0f; // Time the current bird has been inactive
+    private static final float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
+    private static final float VELOCITY_THRESHOLD = 0.1f; // Threshold for inactivity
+
 
     private float accumulator = 0;
     private static final float TIME_STEP = 1 / 120f; // Fixed 60 FPS time step
@@ -84,6 +92,14 @@ public class Level3 extends ScreenAdapter {
     private ArrayList<Body> bodiesToRemove = new ArrayList<>();
 
     private InputMultiplexer inputMultiplexer;
+
+    private Texture saveButtonTexture;
+    private ImageButton saveButton;
+
+    private Texture loadButtonTexture;
+    private ImageButton loadButton;
+
+
 
     private ArrayList<Drawable> level_button_texture(String up_texture, String down_texture ) {
         Texture buttonUpTexture = new Texture(Gdx.files.internal(up_texture));
@@ -120,6 +136,18 @@ public class Level3 extends ScreenAdapter {
     }
 
 
+    public Level3(Game game, boolean loadSavedState) {
+        this(game); // Call the main constructor
+        if (loadSavedState) {
+            GameState loadedState = SerializationUtil.loadGameState();
+            if (loadedState != null) {
+                applyGameState(loadedState);
+            } else {
+                Gdx.app.log("GameState", "Failed to load saved state.");
+            }
+        }
+    }
+
     public Level3(Game game) {
         this.game = game;
         System.out.println("LEVEL 3 ENTERED");
@@ -141,8 +169,18 @@ public class Level3 extends ScreenAdapter {
 
         batch = new SpriteBatch();
 
-        redBird = new Bird("bird1.png", 100, 100); // Set the correct size in pixels
-        stage.addActor(redBird.getImage());
+        birds = new ArrayList<>();
+        currentBirdIndex = 0;
+
+        birds.add(new Bird("bird1.png", 100, 100, 10));
+        birds.add(new Bird("bird1.png", 100, 100, 10));
+        birds.add(new Bird("bird1.png", 100, 100, 10));
+
+        firstBird = birds.get(currentBirdIndex);
+        stage.addActor(firstBird.getImage());
+
+//        redBird = new Bird("bird1.png", 100, 100); // Set the correct size in pixels
+//        stage.addActor(redBird.getImage());
 
 
         pauseTexture = new Texture("pause.png");
@@ -162,6 +200,26 @@ public class Level3 extends ScreenAdapter {
             }
         });
 
+        saveButtonTexture = new Texture("confirm_save.png");
+        saveButton = ImageButton_create("confirm_save.png", "confirm_save.png", 100, 100, 0.1f, 1f);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                saveGameState();
+            }
+        });
+
+        loadButtonTexture = new Texture("Load_Game.png");
+        loadButton = ImageButton_create("Load_Game.png", "Load_Game.png", 100, 100, 0.2f, 1f);
+        loadButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new Level3(game, true)); // Load from saved state
+            }
+        });
+
+
+
         world = new World(GRAVITY, true);
         initializeCollisionListener();
 
@@ -171,7 +229,7 @@ public class Level3 extends ScreenAdapter {
 //       WALL
         createGroundBody(1980, 100, 10, 900);
 
-        createBirdBody();
+        createBirdBody(firstBird);
 
         tiledMap = new TmxMapLoader().load("Level_2.tmx");
         renderer = new OrthogonalTiledMapRenderer(new TmxMapLoader().load(String.valueOf(Gdx.files.internal("Level_2.tmx"))));
@@ -188,7 +246,7 @@ public class Level3 extends ScreenAdapter {
                 // Convert screen coordinates to stage coordinates
                 Vector2 touchPoint = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
 
-                if (redBird.getImage().hit(touchPoint.x-300, touchPoint.y-330, true) != null) {
+                if (firstBird.getImage().hit(touchPoint.x-300, touchPoint.y-330, true) != null) {
                     isDragging = true;
                     dragStart.set(touchPoint);
                     return true;
@@ -244,6 +302,163 @@ public class Level3 extends ScreenAdapter {
 
     }
 
+
+//    private void applyGameState(GameState gameState) {
+//        clearGameObjects();
+//
+//        this.birds = new ArrayList<>();
+//        for (BirdData birdData : gameState.birds) {
+//            Bird bird = new Bird(birdData.texturePath, birdData.positionX, birdData.positionY, (int) birdData.health);
+//            birds.add(bird);
+//            stage.addActor(bird.getImage());
+//            createBirdBody(bird);
+//            birdBody.setLinearVelocity(birdData.velocity);
+//        }
+//        this.currentBirdIndex = gameState.currentBirdIndex;
+//        if (!birds.isEmpty()) {
+//            firstBird = birds.get(currentBirdIndex);
+//        }
+//
+//        // Recreate pigs
+//        this.pigs = new ArrayList<>();
+//        for (PigData pigData : gameState.pigs) {
+//            Pig pig = new Pig(pigData.texturePath, pigData.positionX, pigData.positionY, 100 , 100, (int) pigData.health);
+//            createPigBody(pig);
+//            pigs.add(pigBody);
+//            stage.addActor(pig.getImage());
+//        }
+//
+//        // Recreate blocks
+//        this.blocks = new ArrayList<>();
+//        for (BlockData blockData : gameState.blocks) {
+//            Block block = new Block(blockData.texturePath, blockData.positionX, blockData.positionY, blockData.width, blockData.height, (int) blockData.health);
+//            createBlockBody(block, blockData.rotation); // Modify createBlockBody to accept rotation
+////            createBlockBody(block);
+//            blocks.add(blockBody);
+//            stage.addActor(block.getImage());
+//        }
+//
+//        Gdx.app.log("Serialization", "Game state applied.");
+//    }
+
+//    private void applyGameState(GameState gameState) {
+//        // Clear existing game objects
+//        clearGameObjects();
+//
+//        // Recreate birds
+//        this.birds = new ArrayList<>();
+//        for (int i = 0; i < gameState.birds.size(); i++) {
+//            BirdData birdData = gameState.birds.get(i);
+//            Bird bird = new Bird(birdData.texturePath, birdData.positionX, birdData.positionY, (int) birdData.health);
+//            birds.add(bird);
+//            stage.addActor(bird.getImage());
+//
+//            if (i == gameState.currentBirdIndex) {
+//                createBirdBody(bird);
+//                if (birdBody != null) {
+//                    birdBody.setLinearVelocity(birdData.velocity);
+//                }
+//                firstBird = bird;
+//            }
+//        }
+//        this.currentBirdIndex = gameState.currentBirdIndex;
+//
+//        // Recreate pigs
+//        this.pigs = new ArrayList<>();
+//        for (PigData pigData : gameState.pigs) {
+//            Pig pig = new Pig(pigData.texturePath, pigData.positionX, pigData.positionY, 100, 100, (int) pigData.health);
+//            createPigBody(pig);
+//            pigs.add(pigBody);
+//            stage.addActor(pig.getImage());
+//        }
+//
+//        // Recreate blocks
+//        this.blocks = new ArrayList<>();
+//        for (BlockData blockData : gameState.blocks) {
+//            Block block = new Block(blockData.texturePath, blockData.positionX, blockData.positionY, blockData.width, blockData.height, (int) blockData.health);
+//            createBlockBody(block, blockData.rotation); // Ensure createBlockBody can handle rotation
+//            blocks.add(blockBody);
+//            stage.addActor(block.getImage());
+//        }
+//
+//        Gdx.app.log("Serialization", "Game state applied.");
+//    }
+
+
+    private void applyGameState(GameState gameState) {
+        clearGameObjects();
+
+        // Recreate birds
+        birds.clear();
+        for (BirdData birdData : gameState.birds) {
+            Gdx.app.log("1. applyGameState", "birdData.texturePath: " + birdData.texturePath);
+            if (birdData.texturePath == null) {
+                Gdx.app.error("applyGameState", "Texture path is null for birdData");
+            }
+            if (birdData.health <= 0) {
+                continue;
+            }
+            Bird bird = new Bird(birdData.texturePath, birdData.positionX, birdData.positionY, (int) birdData.health);
+            bird.getImage().setSize(100, 100);
+            bird.getImage().setOrigin(bird.getImage().getWidth() /2 -10, bird.getImage().getHeight() /2 +10);
+
+            birds.add(bird);
+            stage.addActor(bird.getImage());
+
+            if (birdData.isActive) {
+                createBirdBody(bird);
+                birdBody.setLinearVelocity(birdData.velocity);
+                firstBird = bird;
+            }
+
+        }
+        // Recreate pigs
+        pigs.clear();
+        for (PigData pigData : gameState.pigs) {
+            Gdx.app.log("1. applyGameState", "pigData.texturePath: " + pigData.texturePath);
+            Pig pig = new Pig(pigData.texturePath, pigData.positionX, pigData.positionY, pigData.width, pigData.height, (int) pigData.health);
+            createPigBody(pig);
+        }
+
+        // Recreate blocks
+        blocks.clear();
+        for (BlockData blockData : gameState.blocks) {
+            Block block = new Block(blockData.texturePath, blockData.positionX, blockData.positionY, blockData.width, blockData.height, (int) blockData.health);
+            createBlockBody(block, blockData.rotation);
+        }
+
+        Gdx.app.log("GameState", "Game state applied successfully.");
+    }
+
+    private void clearGameObjects() {
+        // Remove and destroy birds
+        for (Bird bird : birds) {
+            stage.getActors().removeValue(bird.getImage(), true);
+            if (birdBody != null) {
+                world.destroyBody(birdBody);
+            }
+        }
+        birds.clear();
+        currentBirdIndex = 0;
+
+        // Remove and destroy pigs
+        for (Body pigBody : pigs) {
+            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+            stage.getActors().removeValue(pig.getImage(), true);
+            world.destroyBody(pigBody);
+        }
+        pigs.clear();
+
+        // Remove and destroy blocks
+        for (Body blockBody : blocks) {
+            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+            stage.getActors().removeValue(block.getImage(), true);
+            world.destroyBody(blockBody);
+        }
+        blocks.clear();
+    }
+
+
     private void applyTrajectoryForce() {
         // Calculate the force vector
         Vector2 force = new Vector2(dragStart).sub(dragEnd); // Reverse the direction
@@ -266,10 +481,10 @@ public class Level3 extends ScreenAdapter {
     }
 
     private boolean isWithinCustomArea(Vector2 touchPoint) {
-        float customX = 500; // Replace with your region's X coordinate
-        float customY = 500; // Replace with your region's Y coordinate
-        float width = 300;   // Width of the custom region
-        float height = 300;  // Height of the custom region
+        float customX = 500;
+        float customY = 500;
+        float width = 300;
+        float height = 300;
 
         return touchPoint.x > customX && touchPoint.x < customX + width &&
             touchPoint.y > customY && touchPoint.y < customY + height;
@@ -347,7 +562,136 @@ public class Level3 extends ScreenAdapter {
 
     }
 
-    private void createBirdBody() {
+    private void createBlockBody(Block block, float rotation) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(block.getPositionX(), block.getPositionY());
+
+        Body body = world.createBody(bodyDef);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(block.getWidth() / 2, block.getHeight() / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0.2f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(block);
+
+        shape.dispose();
+        body.setTransform(body.getPosition(), (float) Math.toRadians(rotation));
+        blocks.add(body);
+        stage.addActor(block.getImage());
+    }
+
+//    public void saveGameState() {
+//        GameState gameState = new GameState();
+//
+//        // Save birds
+//        for (int i = 0; i < birds.size(); i++) {
+//            Bird bird = birds.get(i);
+//            Body body = blocks.get(i); // Adjust this if needed
+//            Vector2 velocity = body.getLinearVelocity();
+//            BirdData birdData = new BirdData(bird, velocity);
+//            gameState.birds.add(birdData);
+//        }
+//        gameState.currentBirdIndex = currentBirdIndex;
+//
+//        // Save pigs
+//        for (Body pigBody : pigs) {
+//            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+//            PigData pigData = new PigData(pig);
+//            gameState.pigs.add(pigData);
+//        }
+//
+//        // Save blocks
+//        for (Body blockBody : blocks) {
+//            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+//            float rotation = (float) Math.toDegrees(blockBody.getAngle());
+//            BlockData blockData = new BlockData(block, rotation);
+//            gameState.blocks.add(blockData);
+//        }
+//
+//        // Serialize to JSON
+//        SerializationUtil.saveGameState(gameState);
+//    }
+//    public void saveGameState() {
+//        GameState gameState = new GameState();
+//
+//        // Save birds
+//        for (int i = 0; i < birds.size(); i++) {
+//            Bird bird = birds.get(i);
+//            Vector2 velocity = new Vector2(0, 0); // Default velocity for inactive birds
+//
+//            if (i == currentBirdIndex && birdBody != null) {
+//                velocity = birdBody.getLinearVelocity();
+//            }
+//
+//            BirdData birdData = new BirdData(bird, velocity);
+//            gameState.birds.add(birdData);
+//        }
+//
+//        gameState.currentBirdIndex = currentBirdIndex;
+//
+//        // Save pigs
+//        for (Body pigBody : pigs) {
+//            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+//            PigData pigData = new PigData(pig);
+//            gameState.pigs.add(pigData);
+//        }
+//
+//        // Save blocks
+//        for (Body blockBody : blocks) {
+//            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+//            float rotation = (float) Math.toDegrees(blockBody.getAngle());
+//            BlockData blockData = new BlockData(block, rotation);
+//            gameState.blocks.add(blockData);
+//        }
+//
+//        // Serialize to JSON
+//        SerializationUtil.saveGameState(gameState);
+//    }
+
+    public void saveGameState() {
+        GameState gameState = new GameState();
+
+        // Save birds
+        for (int i = 0; i < birds.size(); i++) {
+            Bird bird = birds.get(i);
+            if(bird.getHealth() <= 0){
+                continue;
+            }
+            Vector2 velocity = (i == currentBirdIndex && birdBody != null) ? birdBody.getLinearVelocity() : new Vector2(0, 0);
+            boolean isActive = (i == currentBirdIndex);
+            BirdData birdData = new BirdData(bird, velocity, isActive);
+            gameState.birds.add(birdData);
+        }
+
+        gameState.currentBirdIndex = currentBirdIndex;
+
+        // Save pigs
+        for (Body pigBody : pigs) {
+            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+            PigData pigData = new PigData(pig);
+            gameState.pigs.add(pigData);
+        }
+
+        // Save blocks
+        for (Body blockBody : blocks) {
+            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+            float rotation = (float) Math.toDegrees(blockBody.getAngle());
+            BlockData blockData = new BlockData(block, rotation);
+            gameState.blocks.add(blockData);
+        }
+
+        SerializationUtil.saveGameState(gameState);
+        Gdx.app.log("GameState", "Game state saved successfully.");
+    }
+
+
+    private void createBirdBody(Bird bird) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(250 , 500);
@@ -356,6 +700,7 @@ public class Level3 extends ScreenAdapter {
         CircleShape circleShape = new CircleShape();
 
         circleShape.setRadius(35);
+//        circleShape.setRadius(bird.getWidth()/2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 1f;
@@ -363,10 +708,11 @@ public class Level3 extends ScreenAdapter {
         fixtureDef.restitution = 0.7f;
 
         Fixture fixture = birdBody.createFixture(fixtureDef);
-        fixture.setUserData(redBird);
+        fixture.setUserData(bird);
 
         circleShape.dispose();
     }
+
 
     private void createPigBody(MapObject obj){
 
@@ -408,6 +754,31 @@ public class Level3 extends ScreenAdapter {
         pigs.add(pigBody);
         stage.addActor(pig.getImage());
     }
+
+    private void createPigBody(Pig pig){
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(pig.getPositionX() , pig.getPositionY());
+
+        Body body = world.createBody(bodyDef);
+        PolygonShape bodyShape = new PolygonShape();
+        bodyShape.setAsBox(pig.getWidth() /2, pig.getHeight()/ 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = bodyShape;
+        fixtureDef.density = 1f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0.2f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(pig);
+
+        bodyShape.dispose();
+        pigs.add(body);
+        stage.addActor(pig.getImage());
+    }
+
+
 
     private void initializeCollisionListener() {
         world.setContactListener(new ContactListener() {
@@ -452,7 +823,11 @@ public class Level3 extends ScreenAdapter {
 
 
     private boolean isBirdFixture(Fixture fixture) {
-        return fixture.getUserData() instanceof Bird;
+        if (fixture.getUserData() instanceof Bird) { // Check fixture's user data
+            Bird bird = (Bird) fixture.getUserData();
+            return birds.get(currentBirdIndex) == bird; // Ensure it's the active bird
+        }
+        return false;
     }
 
     private boolean isBlockFixture(Fixture fixture) {
@@ -472,11 +847,19 @@ public class Level3 extends ScreenAdapter {
         if (block.isDestroyed()) {
             bodiesToRemove.add(blockFixture.getBody());
             block.getImage().setColor(1, 0, 0, 1); // Optional visual feedback for removal
-        }
-        else {
+        } else {
             block.getImage().setColor(1, 1, 0, 1); // Optional visual feedback for one collision
         }
+
+        Bird currentBird = birds.get(currentBirdIndex);
+        currentBird.decrementHealth();
+        if (currentBird.isDestroyed()) {
+            System.out.println("Current bird destroyed!");
+            birdsToRemove.add(currentBird);
+
+        }
     }
+
     private void handleCollisionWithPig(Fixture pigFixture) {
         Pig pig = (Pig) pigFixture.getUserData();
         System.out.println("Bird collided with Pig: " + pig);
@@ -486,9 +869,17 @@ public class Level3 extends ScreenAdapter {
         if (pig.isDestroyed()) {
             bodiesToRemove_PIG.add(pigFixture.getBody());
             pig.getImage().setColor(1, 0, 0, 1); // Optional visual feedback for removal
-        }
-        else {
+        } else {
             pig.getImage().setColor(1, 1, 0, 1); // Optional visual feedback for one collision
+        }
+
+        // Decrement bird's health
+        Bird currentBird = birds.get(currentBirdIndex);
+        currentBird.decrementHealth();
+        if (currentBird.isDestroyed()) {
+            System.out.println("Current bird destroyed!");
+            birdsToRemove.add(currentBird);
+
         }
     }
 
@@ -497,29 +888,36 @@ public class Level3 extends ScreenAdapter {
     @Override
     public void render(float delta) {
         camera.update();
-        // Step the physics world
-//        world.step(1 / FPS, 6, 2);
-// //        world.step(delta, 6, 2);
-//        accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
-//
-//        while (accumulator >= TIME_STEP) {
-//            world.step(TIME_STEP, 6, 2);
-//            accumulator -= TIME_STEP;
-//        }
-
         renderer.setView(camera);
         renderer.render();
 
-        // Sync Bird Actor Position with Physics Body
-        birdBody.setAngularDamping(2f);
-        Vector2 position = birdBody.getPosition();
-        redBird.getImage().setOrigin(
-            redBird.getImage().getWidth() / 2,
-            redBird.getImage().getHeight() / 2
-        );
-        redBird.getImage().setPosition(
-            position.x - redBird.getImage().getWidth() / 2 -10,
-            position.y - redBird.getImage().getHeight() / 2 + 10);
+        if (birdBody != null) {
+            birdBody.setAngularDamping(2f);
+            Vector2 position = birdBody.getPosition();
+            Bird currentBird = birds.get(currentBirdIndex);
+            currentBird.getImage().setOrigin(
+                currentBird.getImage().getWidth() / 2,
+                currentBird.getImage().getHeight() / 2
+            );
+            currentBird.getImage().setPosition(
+                position.x - currentBird.getImage().getWidth() / 2 - 10,
+                position.y - currentBird.getImage().getHeight() / 2 + 10
+            );
+
+            Vector2 velocity = birdBody.getLinearVelocity();
+            if (velocity.len() < VELOCITY_THRESHOLD) {
+                birdInactiveTime += delta;
+                System.out.println("Bird inactive time: " + birdInactiveTime);
+            } else {
+                birdInactiveTime = 0f;
+            }
+
+            if (birdInactiveTime >= INACTIVE_TIME_THRESHOLD) {
+                System.out.println("Bird inactive for some time.");
+                birdsToRemove.add(currentBird);
+                birdInactiveTime = 0f;
+            }
+        }
 
         for (Body block : blocks) {
             Vector2 positionBlock = block.getPosition();
@@ -553,13 +951,8 @@ public class Level3 extends ScreenAdapter {
             );
         }
 
-
-//        PAUSE
+        // Physics step
         if (!showPause) {
-            System.out.println("show pause false");
-//            Gdx.input.setInputProcessor(stage);
-//            inputMultiplexer = new InputMultiplexer();
-
             world.step(1 / FPS, 6, 2);
             accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
 
@@ -567,24 +960,10 @@ public class Level3 extends ScreenAdapter {
                 world.step(TIME_STEP, 6, 2);
                 accumulator -= TIME_STEP;
             }
-//            inputMultiplexer.addProcessor(stage);
-
-//            stage.act(delta);
-//            stage.draw();
-        }
-
-        else if (showPause && overlayPause.isActive()) {
-            System.out.println("pause");
+        } else if (showPause && overlayPause.isActive()) {
             Gdx.input.setInputProcessor(overlayPause.getStage());
             overlayPause.render(delta);
-//            game.setScreen(this);
-//            return;
-        }
-        else{
-            System.out.println("else");
-//            Gdx.input.setInputProcessor(stage);
-//            inputMultiplexer = new InputMultiplexer();
-
+        } else {
             world.step(1 / FPS, 6, 2);
             accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
 
@@ -592,18 +971,9 @@ public class Level3 extends ScreenAdapter {
                 world.step(TIME_STEP, 6, 2);
                 accumulator -= TIME_STEP;
             }
-//            inputMultiplexer.addProcessor(stage);
         }
-//        else{
-//            System.out.println("ELSEEEEE");
-//            inputMultiplexer.addProcessor(stage);
-////
-////            stage.act(delta);
-////            stage.draw();
-//        }
-//      PAUSE - END
 
-
+        // Render drag line if dragging
         if (isDragging) {
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -617,23 +987,18 @@ public class Level3 extends ScreenAdapter {
 
         debugRenderer.render(world, camera.combined);
 
-        // Inside your render loop, after stepping the world
         for (Body body : bodiesToRemove) {
-            // Remove from the block list
             blocks.remove(body);
 
-            // Get the block's Image and remove it from the stage
             if (body.getFixtureList().size > 0 && body.getFixtureList().first().getUserData() instanceof Block) {
                 Block blockData = (Block) body.getFixtureList().first().getUserData();
                 if (blockData != null) {
                     stage.getActors().removeValue(blockData.getImage(), true); // Remove the actor from the stage
                 }
             }
-            // Destroy the body from the physics world
             world.destroyBody(body);
         }
         bodiesToRemove.clear();
-
 
         for (Body body_pig : bodiesToRemove_PIG) {
             pigs.remove(body_pig);
@@ -648,10 +1013,36 @@ public class Level3 extends ScreenAdapter {
         }
         bodiesToRemove_PIG.clear();
 
+        for (Bird bird : birdsToRemove) {
+            stage.getActors().removeValue(bird.getImage(), true);
+
+            if (birdBody != null) {
+                world.destroyBody(birdBody);
+                birdBody = null;
+            }
+
+            if (currentBirdIndex + 1 < birds.size()) {
+                currentBirdIndex++;
+                Bird nextBird = birds.get(currentBirdIndex);
+                stage.addActor(nextBird.getImage());
+                createBirdBody(nextBird); // Create physics body for the next bird
+                System.out.println("Switched to the next bird!");
+            } else {
+                System.out.println("No more birds available! Game over or end level.");
+
+                if(pigs.isEmpty()){
+                    game.setScreen(new WinScreen(game));
+                }
+                else{
+                    game.setScreen(new LoseScreen(game));
+                }
+            }
+        }
+        birdsToRemove.clear();
+
         stage.act(delta);
         stage.draw();
     }
-
 
 
     public void resumeLevel(){
@@ -683,6 +1074,8 @@ public class Level3 extends ScreenAdapter {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT );
         stage.getViewport().update(width, height, true);
         pauseButton.setPosition(Gdx.graphics.getWidth()*0.9f - pauseButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.9f - pauseButton.getHeight() *0.5f);
+        saveButton.setPosition(Gdx.graphics.getWidth()*0.6f - saveButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.9f - saveButton.getHeight() *0.5f);
+        loadButton.setPosition(Gdx.graphics.getWidth()*0.4f - loadButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.9f - loadButton.getHeight() *0.5f);
 
     }
 

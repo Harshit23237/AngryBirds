@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class Block {
-
+    private String texturePath;
     private Texture texture;
     private Image image;
     private int health;
@@ -15,21 +15,39 @@ public class Block {
 //    float SCREEN_WIDTH = Gdx.graphics.getWidth();
 //    float SCREEN_HEIGHT = Gdx.graphics.getHeight();
     public Block(String texturePath, float x, float y, float width, float height) {
-        texture = new Texture(Gdx.files.internal(texturePath));
+        this.texturePath = texturePath;
+        this.texture = new Texture(Gdx.files.internal(texturePath));
 //        this.xPercent=x;
 //        this.yPercent=y;
 //        this.widthPercent=width;
 //        this.heightPercent=height;
         this.image = new Image(texture);
-//        this.image.setPosition(SCREEN_WIDTH*x-width*0.5f,SCREEN_HEIGHT* y-height*0.5f);
         this.image.setSize(width, height);
         this.health = 1; // Initial health (2 collisions needed to destroy)
     }
     public Block(String texturePath, float x, float y, float width, float height, int health) {
-        Texture texture = new Texture(Gdx.files.internal(texturePath));
+        this.texturePath = texturePath;
+        this.texture = new Texture(Gdx.files.internal(texturePath));
         this.image = new Image(texture);
         this.image.setBounds(x, y, width, height);
         this.health = health;
+    }
+
+    public float getPositionX() {
+        return image.getX();
+    }
+    public float getPositionY() {
+        return image.getY();
+    }
+    public float getWidth() {
+        return image.getWidth();
+    }
+    public float getHeight() {
+        return image.getHeight();
+    }
+
+    public String getTexturePath() {
+        return this.texturePath;
     }
 
     public Image getImage() {
@@ -56,17 +74,5 @@ public class Block {
         return health <= 0;
     }
 
-//    public Image getImage() {
-//        return this.image;
-//    }
-//    public void resize(float newWidth, float newHeight) {
-//        // Resize and reposition the block based on the new screen dimensions
-//        float newBlockWidth = newWidth * widthPercent;
-//        float newBlockHeight = newHeight * heightPercent;
-////        float newX = newWidth * xPercent - newBlockWidth * 0.5f;
-////        float newY = newHeight * yPercent - newBlockHeight * 0.5f;
-//
-//        this.image.setSize(newBlockWidth, newBlockHeight);
-//        this.image.setPosition(newX, newY);
-//    }
+
 }

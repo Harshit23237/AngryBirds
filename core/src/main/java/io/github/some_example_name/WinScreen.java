@@ -27,6 +27,7 @@ public class WinScreen extends ScreenAdapter {
     private ImageButton nextLevelButton;
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
+
     public WinScreen(Game game) {
         this.game = game;
     }
@@ -66,24 +67,14 @@ public class WinScreen extends ScreenAdapter {
 
     @Override
     public void show() {
-        background_texture = new Texture(Gdx.files.internal("win_bg.png"));
+        background_texture = new Texture(Gdx.files.internal("win_bg3.jpg"));
+
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Add Next Level Button
-         nextLevelButton = ImageButton_create("next_level.png", "next_level.png", 250, 150, 0.5f, 0f);
-         nextLevelButton.setPosition(735,15);
-        nextLevelButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new LevelPage(game)); // Proceed to the next level
-            }
-        });
-        //stage.addActor(nextLevelButton);
-
         // Add Exit Button
-        exitButton = ImageButton_create("exit1.png", "exit1.png", 200, 100, 0.5f, 0.2f);
+        exitButton = ImageButton_create("exit1.png", "exit1.png", 250, 100, 0.5f, 0.5f);
         exitButton.setPosition(5,5);
         exitButton.addListener(new ClickListener() {
             @Override
@@ -91,15 +82,15 @@ public class WinScreen extends ScreenAdapter {
                 game.setScreen(new TutorialGame(game)); // Exit to tutorial page
             }
         });
-        //stage.addActor(exitButton);
 
-        // Set Input Processor
-        //Gdx.input.setInputProcessor(stage);
     }
 
 
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        exitButton.setPosition(Gdx.graphics.getWidth() * 0.5f - exitButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.15f - exitButton.getHeight() *0.5f);
+
+
     }
         @Override
     public void render(float delta) {

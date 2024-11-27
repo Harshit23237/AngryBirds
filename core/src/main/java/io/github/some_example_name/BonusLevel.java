@@ -154,7 +154,6 @@ public class BonusLevel extends ScreenAdapter {
         birds.add(new Bird("bird1.png", 100, 100, 10));
         birds.add(new Bird("bird1.png", 100, 100, 10));
 
-        // Add the first bird to the stage
         firstBird = birds.get(currentBirdIndex);
         stage.addActor(firstBird.getImage());
 
@@ -273,10 +272,10 @@ public class BonusLevel extends ScreenAdapter {
     }
 
     private boolean isWithinCustomArea(Vector2 touchPoint) {
-        float customX = 500; // Replace with your region's X coordinate
-        float customY = 500; // Replace with your region's Y coordinate
-        float width = 300;   // Width of the custom region
-        float height = 300;  // Height of the custom region
+        float customX = 500;
+        float customY = 500;
+        float width = 300;
+        float height = 300;
 
         return touchPoint.x > customX && touchPoint.x < customX + width &&
             touchPoint.y > customY && touchPoint.y < customY + height;
@@ -783,7 +782,6 @@ public class BonusLevel extends ScreenAdapter {
         renderer.setView(camera);
         renderer.render();
 
-        // Sync Bird Actor Position with Physics Body
         if (birdBody != null) {
             birdBody.setAngularDamping(2f);
             Vector2 position = birdBody.getPosition();
@@ -797,20 +795,18 @@ public class BonusLevel extends ScreenAdapter {
                 position.y - currentBird.getImage().getHeight() / 2 + 10
             );
 
-            // Check bird's velocity to determine inactivity
             Vector2 velocity = birdBody.getLinearVelocity();
             if (velocity.len() < VELOCITY_THRESHOLD) {
                 birdInactiveTime += delta;
                 System.out.println("Bird inactive time: " + birdInactiveTime);
             } else {
-                birdInactiveTime = 0f; // Reset timer if bird is moving
+                birdInactiveTime = 0f;
             }
 
-            // If bird has been inactive for too long, mark it for removal
             if (birdInactiveTime >= INACTIVE_TIME_THRESHOLD) {
-                System.out.println("Bird inactive for 3 seconds. Marking for removal.");
+                System.out.println("Bird inactive for some time.");
                 birdsToRemove.add(currentBird);
-                birdInactiveTime = 0f; // Reset timer
+                birdInactiveTime = 0f;
             }
         }
 
@@ -882,19 +878,15 @@ public class BonusLevel extends ScreenAdapter {
 
         debugRenderer.render(world, camera.combined);
 
-        // Process bodies to remove (blocks and pigs)
         for (Body body : bodiesToRemove) {
-            // Remove from the block list
             blocks.remove(body);
 
-            // Get the block's Image and remove it from the stage
             if (body.getFixtureList().size > 0 && body.getFixtureList().first().getUserData() instanceof Block) {
                 Block blockData = (Block) body.getFixtureList().first().getUserData();
                 if (blockData != null) {
                     stage.getActors().removeValue(blockData.getImage(), true); // Remove the actor from the stage
                 }
             }
-            // Destroy the body from the physics world
             world.destroyBody(body);
         }
         bodiesToRemove.clear();
@@ -912,18 +904,14 @@ public class BonusLevel extends ScreenAdapter {
         }
         bodiesToRemove_PIG.clear();
 
-        // Process birds to remove
         for (Bird bird : birdsToRemove) {
-            // Remove bird's image from stage
             stage.getActors().removeValue(bird.getImage(), true);
 
-            // Destroy the bird's body
             if (birdBody != null) {
                 world.destroyBody(birdBody);
                 birdBody = null;
             }
 
-            // Switch to next bird
             if (currentBirdIndex + 1 < birds.size()) {
                 currentBirdIndex++;
                 Bird nextBird = birds.get(currentBirdIndex);
@@ -932,12 +920,17 @@ public class BonusLevel extends ScreenAdapter {
                 System.out.println("Switched to the next bird!");
             } else {
                 System.out.println("No more birds available! Game over or end level.");
-                // Handle level failure or end game logic here
+
+                if(pigs.isEmpty()){
+                    game.setScreen(new WinScreen(game));
+                }
+                else{
+                    game.setScreen(new LoseScreen(game));
+                }
             }
         }
         birdsToRemove.clear();
 
-        // Act and draw the stage
         stage.act(delta);
         stage.draw();
     }
