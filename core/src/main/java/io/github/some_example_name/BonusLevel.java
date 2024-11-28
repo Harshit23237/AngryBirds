@@ -185,8 +185,8 @@ public class BonusLevel extends ScreenAdapter {
 
         createBirdBody(firstBird);
 
-        tiledMap = new TmxMapLoader().load("bonus_level.tmx");
-        renderer = new OrthogonalTiledMapRenderer(new TmxMapLoader().load(String.valueOf(Gdx.files.internal("bonus_level.tmx"))));
+        tiledMap = new TmxMapLoader().load("bonus_level_2.tmx");
+        renderer = new OrthogonalTiledMapRenderer(new TmxMapLoader().load(String.valueOf(Gdx.files.internal("bonus_level_2.tmx"))));
 
         dragStart = new Vector2();
         dragEnd = new Vector2();
@@ -237,7 +237,7 @@ public class BonusLevel extends ScreenAdapter {
             }
         });
 
-        for(MapObject obj : tiledMap.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)){
+        for(MapObject obj : tiledMap.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
             createBlockBody(obj);
         }
 //        for(MapObject obj : tiledMap.getLayers().get(7).getObjects().getByType(RectangleMapObject.class)){
@@ -245,7 +245,7 @@ public class BonusLevel extends ScreenAdapter {
 //            createStaticBody(rect);
 //        }
 //        FOR PIGS
-        for(MapObject obj : tiledMap.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)){
+        for(MapObject obj : tiledMap.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
             createPigBody(obj);
         }
 

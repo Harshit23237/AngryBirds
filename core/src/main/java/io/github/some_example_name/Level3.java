@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.Game.TutorialGame;
+import com.badlogic.gdx.audio.Music;
 
 import java.util.ArrayList;
 
@@ -99,6 +100,7 @@ public class Level3 extends ScreenAdapter {
     private Texture loadButtonTexture;
     private ImageButton loadButton;
 
+    private Music epic_music;
 
 
     private ArrayList<Drawable> level_button_texture(String up_texture, String down_texture ) {
@@ -873,7 +875,6 @@ public class Level3 extends ScreenAdapter {
             pig.getImage().setColor(1, 1, 0, 1); // Optional visual feedback for one collision
         }
 
-        // Decrement bird's health
         Bird currentBird = birds.get(currentBirdIndex);
         currentBird.decrementHealth();
         if (currentBird.isDestroyed()) {
@@ -890,6 +891,16 @@ public class Level3 extends ScreenAdapter {
         camera.update();
         renderer.setView(camera);
         renderer.render();
+
+        if(epic_music == null){
+//            int num_of_birds = (int) birds.size();
+            if(currentBirdIndex == birds.size() - 1) {
+                epic_music = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
+                epic_music.setLooping(true);
+                epic_music.play();
+                epic_music.setVolume(0.2f);
+            }
+        }
 
         if (birdBody != null) {
             birdBody.setAngularDamping(2f);
@@ -908,7 +919,8 @@ public class Level3 extends ScreenAdapter {
             if (velocity.len() < VELOCITY_THRESHOLD) {
                 birdInactiveTime += delta;
                 System.out.println("Bird inactive time: " + birdInactiveTime);
-            } else {
+            }
+            else {
                 birdInactiveTime = 0f;
             }
 
@@ -1025,15 +1037,18 @@ public class Level3 extends ScreenAdapter {
                 currentBirdIndex++;
                 Bird nextBird = birds.get(currentBirdIndex);
                 stage.addActor(nextBird.getImage());
-                createBirdBody(nextBird); // Create physics body for the next bird
+                createBirdBody(nextBird);
                 System.out.println("Switched to the next bird!");
-            } else {
+            }
+            else {
                 System.out.println("No more birds available! Game over or end level.");
 
                 if(pigs.isEmpty()){
+                    if (epic_music != null) epic_music.dispose();
                     game.setScreen(new WinScreen(game));
                 }
                 else{
+                    if (epic_music != null) epic_music.dispose();
                     game.setScreen(new LoseScreen(game));
                 }
             }
@@ -1087,5 +1102,7 @@ public class Level3 extends ScreenAdapter {
         renderer.dispose();
         world.dispose();
         debugRenderer.dispose();
+        if (epic_music != null) epic_music.dispose();
+
     }
 }

@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.Game.MyGame;
 import io.github.Game.TutorialGame;
+import com.badlogic.gdx.audio.Music;
 
 import java.util.ArrayList;
 
@@ -27,6 +28,8 @@ public class WinScreen extends ScreenAdapter {
     private ImageButton nextLevelButton;
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
+
+    private Music winMusic;
 
     public WinScreen(Game game) {
         this.game = game;
@@ -73,6 +76,10 @@ public class WinScreen extends ScreenAdapter {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
+        winMusic = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
+        winMusic.setLooping(true);
+        winMusic.play();
+
         // Add Exit Button
         exitButton = ImageButton_create("exit1.png", "exit1.png", 250, 100, 0.5f, 0.5f);
         exitButton.setPosition(5,5);
@@ -111,5 +118,6 @@ public class WinScreen extends ScreenAdapter {
     public void dispose() {
         background_texture.dispose();
         stage.dispose();
+        if (winMusic != null) winMusic.dispose();
     }
 }
