@@ -228,8 +228,12 @@ public class Level3 extends ScreenAdapter {
         debugRenderer = new Box2DDebugRenderer();
 
         createGroundBody(0, 0, 1980, 200);
+        createGroundBody(340, 270, 50, 80);
 //       WALL
         createGroundBody(1980, 100, 10, 900);
+        createGroundBody(-15, 100, 10, 1000);
+//        UP WALL
+        createGroundBody(0, 1070, 1960, 10);
 
         createBirdBody(firstBird);
 
@@ -696,7 +700,7 @@ public class Level3 extends ScreenAdapter {
     private void createBirdBody(Bird bird) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(250 , 500);
+        bodyDef.position.set(350 , 400);
 
         birdBody = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
@@ -971,10 +975,12 @@ public class Level3 extends ScreenAdapter {
                 world.step(TIME_STEP, 6, 2);
                 accumulator -= TIME_STEP;
             }
-        } else if (showPause && overlayPause.isActive()) {
+        }
+        else if (showPause && overlayPause.isActive()) {
             Gdx.input.setInputProcessor(overlayPause.getStage());
             overlayPause.render(delta);
-        } else {
+        }
+        else {
             world.step(1 / FPS, 6, 2);
             accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
 

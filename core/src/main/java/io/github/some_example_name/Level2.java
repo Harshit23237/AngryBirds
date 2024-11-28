@@ -488,7 +488,7 @@ public class Level2 extends ScreenAdapter {
         else if(obj.getProperties().get("id").equals("5")){
             System.out.println("ROCK TEXTURE");
             Integer ROCK_HEALTH = 2;
-            block = new Block("block__3_vert.jpg", rect.x, rect.y, rect.width, rect.height, ROCK_HEALTH);
+            block = new Block("block__3_vert2.png", rect.x, rect.y, rect.width, rect.height, ROCK_HEALTH);
         }
         else {
             System.out.println("GLASS TEXTURE");

@@ -19,10 +19,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
 
-import io.github.some_example_name.BonusLevel;
-import io.github.some_example_name.Level2;
-import io.github.some_example_name.Level3;
-import io.github.some_example_name.LevelPage;
+import io.github.some_example_name.*;
 
 public class TutorialGame extends ScreenAdapter {//pages directed (load game,
     private Game game;
@@ -31,6 +28,8 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
     private ImageButton button_lvl1;
     private ImageButton button_lvl2;
     private ImageButton button_lvl3;
+    private ImageButton button_bonus;
+
     private ImageButton back_button;
     private ImageButton settingsButton;
     private SettingsOverlay settingsOverlay;
@@ -92,7 +91,7 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
             @Override
             public void clicked(InputEvent event, float x, float y) {
 //                game.setScreen(new StartGame(game));
-                game.setScreen( new BonusLevel(game));
+                game.setScreen( new Level4(game));
             }
         });
 
@@ -115,6 +114,16 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
             public void clicked(InputEvent event, float x, float y) {
 //                game.setScreen(new TutorialGame(game));
                 game.setScreen( new Level3(game));
+            }
+        });
+
+        button_bonus = ImageButton_create("GameStart_bg.jpg", "GameStart_bg.jpg", 200,200, 0.5f, 0.5f );
+
+        button_bonus.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+//                game.setScreen(new TutorialGame(game));
+                game.setScreen( new BonusLevel(game));
             }
         });
 
@@ -209,6 +218,7 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
         button_lvl1.setPosition(Gdx.graphics.getWidth() * 0.25f - button_lvl1.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - button_lvl1.getHeight() *0.5f);
         button_lvl2.setPosition(Gdx.graphics.getWidth() * 0.50f - button_lvl2.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - button_lvl2.getHeight() *0.5f);
         button_lvl3.setPosition(Gdx.graphics.getWidth() * 0.75f - button_lvl3.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - button_lvl3.getHeight() *0.5f);
+        button_bonus.setPosition(Gdx.graphics.getWidth() * 0.5f - button_bonus.getWidth()*0.5f, Gdx.graphics.getHeight() *0.3f - button_bonus.getHeight() *0.5f);
         settingsButton.setPosition(Gdx.graphics.getWidth() * 0.2f - settingsButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.11f - settingsButton.getHeight() *0.5f);
         back_button.setPosition(Gdx.graphics.getWidth() * 0.1f - back_button.getWidth()*0.5f, Gdx.graphics.getHeight() *0.1f - back_button.getHeight() *0.5f);
 

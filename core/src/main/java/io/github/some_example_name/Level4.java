@@ -26,8 +26,7 @@ import com.badlogic.gdx.audio.Music;
 
 import java.util.ArrayList;
 
-public class BonusLevel extends ScreenAdapter {
-
+public class Level4 extends ScreenAdapter {
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
@@ -62,9 +61,9 @@ public class BonusLevel extends ScreenAdapter {
     private TiledMap tiledMap;
 //    =====
 
-    private Vector2 dragStart;   // Where the drag starts
-    private Vector2 dragEnd;     // Where the drag ends
-    private boolean isDragging;  // If the bird is being dragged
+    private Vector2 dragStart;
+    private Vector2 dragEnd;
+    private boolean isDragging;
 
     private Vector2 GRAVITY;
     private ShapeRenderer shapeRenderer;
@@ -84,8 +83,9 @@ public class BonusLevel extends ScreenAdapter {
     private ArrayList<Bird> birdsToRemove = new ArrayList<>();
 
     private float birdInactiveTime = 0f; // Time the current bird has been inactive
-    private static final float INACTIVE_TIME_THRESHOLD = 4.5f;
-    private static final float VELOCITY_THRESHOLD = 0.1f;
+    private static final float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
+    private static final float VELOCITY_THRESHOLD = 0.1f; // Threshold for inactivity
+
 
     private float accumulator = 0;
     private static final float TIME_STEP = 1 / 120f; // Fixed 60 FPS time step
@@ -94,7 +94,13 @@ public class BonusLevel extends ScreenAdapter {
 
     private InputMultiplexer inputMultiplexer;
 
-    private Music eagle_music;
+    private Texture saveButtonTexture;
+    private ImageButton saveButton;
+
+    private Texture loadButtonTexture;
+    private ImageButton loadButton;
+
+    private Music epic_music;
 
 
     private ArrayList<Drawable> level_button_texture(String up_texture, String down_texture ) {
@@ -132,33 +138,52 @@ public class BonusLevel extends ScreenAdapter {
     }
 
 
-    public BonusLevel(Game game) {
+    public Level4(Game game, boolean loadSavedState) {
+        this(game); // Call the main constructor
+        if (loadSavedState) {
+            GameState loadedState = SerializationUtil.loadGameState();
+            if (loadedState != null) {
+                applyGameState(loadedState);
+            } else {
+                Gdx.app.log("GameState", "Failed to load saved state.");
+            }
+        }
+    }
+
+    public Level4(Game game) {
         this.game = game;
-        System.out.println("Bonus ENTERED");
-        GRAVITY = new Vector2(0,10);
+        System.out.println("LEVEL 3 ENTERED");
+        GRAVITY = new Vector2(0,-20);
         shapeRenderer = new ShapeRenderer();
+//        levelPage = new LevelPage(game);
+//        overlayPause = new OverlayPause(levelPage, game);
         overlayPause = new OverlayPause(this, game);
 
         camera = new OrthographicCamera(1960, 1080);
+//        camera = new OrthographicCamera();
+
         camera.setToOrtho(false, 1960, 1080);
         camera.position.set((float) 1960 /2, (float) 1080 /2, 0);
 
         stage = new Stage(new ScreenViewport(camera));
+//        Gdx.input.setInputProcessor(stage);
         inputMultiplexer = new InputMultiplexer();
+
         batch = new SpriteBatch();
 
-//        redBird = new Bird("bird1.png", 100, 100); // Set the correct size in pixels
-//        stage.addActor(redBird.getImage());
         birds = new ArrayList<>();
         currentBirdIndex = 0;
 
-        // Create and add multiple birds
-        birds.add(new Bird("eagle.png", 100, 100, 10)); // 3 health points
-        birds.add(new Bird("eagle.png", 100, 100, 10));
+        birds.add(new Bird("bird1.png", 100, 100, 8));
+        birds.add(new Bird("bird1.png", 100, 100, 8));
         birds.add(new Bird("shake_bird.png", 100, 100, 10));
 
         firstBird = birds.get(currentBirdIndex);
         stage.addActor(firstBird.getImage());
+
+//        redBird = new Bird("bird1.png", 100, 100); // Set the correct size in pixels
+//        stage.addActor(redBird.getImage());
+
 
         pauseTexture = new Texture("pause.png");
         pauseButton = ImageButton_create("pause.png","pause_down.png",100,100, 1f, 1f);
@@ -166,6 +191,8 @@ public class BonusLevel extends ScreenAdapter {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("clicked PAUSE");
+//                showSettings = !showSettings;
+//                settingsOverlay.setActive(showSettings);
                 if (!overlayPause.isActive()) {
                     System.out.println("pause is now true");
                     showPause = true;
@@ -175,25 +202,44 @@ public class BonusLevel extends ScreenAdapter {
             }
         });
 
+        saveButtonTexture = new Texture("confirm_save.png");
+        saveButton = ImageButton_create("confirm_save.png", "confirm_save.png", 100, 100, 0.1f, 1f);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                saveGameState();
+            }
+        });
+
+        loadButtonTexture = new Texture("Load_Game.png");
+        loadButton = ImageButton_create("Load_Game.png", "Load_Game.png", 100, 100, 0.2f, 1f);
+        loadButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new Level4(game, true)); // Load from saved state
+            }
+        });
+
+
+
         world = new World(GRAVITY, true);
         initializeCollisionListener();
 
         debugRenderer = new Box2DDebugRenderer();
 
+
         createGroundBody(0, 0, 1980, 200);
-        createGroundBody(300, 240, 50, 80);
+        createGroundBody(340, 270, 50, 80);
 //       WALL
-        createGroundBody(1980, 100, 10, 1000);
+        createGroundBody(1980, 100, 10, 900);
         createGroundBody(-15, 100, 10, 1000);
 //        UP WALL
         createGroundBody(0, 1070, 1960, 10);
-//        up catapult
-        createGroundBody(320,460, 2, 10);
 
         createBirdBody(firstBird);
 
-        tiledMap = new TmxMapLoader().load("bonus_level_2.tmx");
-        renderer = new OrthogonalTiledMapRenderer(new TmxMapLoader().load(String.valueOf(Gdx.files.internal("bonus_level_2.tmx"))));
+        tiledMap = new TmxMapLoader().load("Level_4.tmx");
+        renderer = new OrthogonalTiledMapRenderer(new TmxMapLoader().load(String.valueOf(Gdx.files.internal("Level_4.tmx"))));
 
         dragStart = new Vector2();
         dragEnd = new Vector2();
@@ -244,7 +290,8 @@ public class BonusLevel extends ScreenAdapter {
             }
         });
 
-        for(MapObject obj : tiledMap.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+        for(MapObject obj : tiledMap.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
+//            Rectangle rect = ((RectangleMapObject)obj).getRectangle() ;
             createBlockBody(obj);
         }
 //        for(MapObject obj : tiledMap.getLayers().get(7).getObjects().getByType(RectangleMapObject.class)){
@@ -252,7 +299,7 @@ public class BonusLevel extends ScreenAdapter {
 //            createStaticBody(rect);
 //        }
 //        FOR PIGS
-        for(MapObject obj : tiledMap.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
+        for(MapObject obj : tiledMap.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)){
             createPigBody(obj);
         }
 
@@ -262,8 +309,167 @@ public class BonusLevel extends ScreenAdapter {
 
     }
 
+
+//    private void applyGameState(GameState gameState) {
+//        clearGameObjects();
+//
+//        this.birds = new ArrayList<>();
+//        for (BirdData birdData : gameState.birds) {
+//            Bird bird = new Bird(birdData.texturePath, birdData.positionX, birdData.positionY, (int) birdData.health);
+//            birds.add(bird);
+//            stage.addActor(bird.getImage());
+//            createBirdBody(bird);
+//            birdBody.setLinearVelocity(birdData.velocity);
+//        }
+//        this.currentBirdIndex = gameState.currentBirdIndex;
+//        if (!birds.isEmpty()) {
+//            firstBird = birds.get(currentBirdIndex);
+//        }
+//
+//        // Recreate pigs
+//        this.pigs = new ArrayList<>();
+//        for (PigData pigData : gameState.pigs) {
+//            Pig pig = new Pig(pigData.texturePath, pigData.positionX, pigData.positionY, 100 , 100, (int) pigData.health);
+//            createPigBody(pig);
+//            pigs.add(pigBody);
+//            stage.addActor(pig.getImage());
+//        }
+//
+//        // Recreate blocks
+//        this.blocks = new ArrayList<>();
+//        for (BlockData blockData : gameState.blocks) {
+//            Block block = new Block(blockData.texturePath, blockData.positionX, blockData.positionY, blockData.width, blockData.height, (int) blockData.health);
+//            createBlockBody(block, blockData.rotation); // Modify createBlockBody to accept rotation
+////            createBlockBody(block);
+//            blocks.add(blockBody);
+//            stage.addActor(block.getImage());
+//        }
+//
+//        Gdx.app.log("Serialization", "Game state applied.");
+//    }
+
+//    private void applyGameState(GameState gameState) {
+//        // Clear existing game objects
+//        clearGameObjects();
+//
+//        // Recreate birds
+//        this.birds = new ArrayList<>();
+//        for (int i = 0; i < gameState.birds.size(); i++) {
+//            BirdData birdData = gameState.birds.get(i);
+//            Bird bird = new Bird(birdData.texturePath, birdData.positionX, birdData.positionY, (int) birdData.health);
+//            birds.add(bird);
+//            stage.addActor(bird.getImage());
+//
+//            if (i == gameState.currentBirdIndex) {
+//                createBirdBody(bird);
+//                if (birdBody != null) {
+//                    birdBody.setLinearVelocity(birdData.velocity);
+//                }
+//                firstBird = bird;
+//            }
+//        }
+//        this.currentBirdIndex = gameState.currentBirdIndex;
+//
+//        // Recreate pigs
+//        this.pigs = new ArrayList<>();
+//        for (PigData pigData : gameState.pigs) {
+//            Pig pig = new Pig(pigData.texturePath, pigData.positionX, pigData.positionY, 100, 100, (int) pigData.health);
+//            createPigBody(pig);
+//            pigs.add(pigBody);
+//            stage.addActor(pig.getImage());
+//        }
+//
+//        // Recreate blocks
+//        this.blocks = new ArrayList<>();
+//        for (BlockData blockData : gameState.blocks) {
+//            Block block = new Block(blockData.texturePath, blockData.positionX, blockData.positionY, blockData.width, blockData.height, (int) blockData.health);
+//            createBlockBody(block, blockData.rotation); // Ensure createBlockBody can handle rotation
+//            blocks.add(blockBody);
+//            stage.addActor(block.getImage());
+//        }
+//
+//        Gdx.app.log("Serialization", "Game state applied.");
+//    }
+
+
+    private void applyGameState(GameState gameState) {
+        clearGameObjects();
+
+        // Recreate birds
+        birds.clear();
+        for (BirdData birdData : gameState.birds) {
+            Gdx.app.log("1. applyGameState", "birdData.texturePath: " + birdData.texturePath);
+            if (birdData.texturePath == null) {
+                Gdx.app.error("applyGameState", "Texture path is null for birdData");
+            }
+            if (birdData.health <= 0) {
+                continue;
+            }
+            Bird bird = new Bird(birdData.texturePath, birdData.positionX, birdData.positionY, (int) birdData.health);
+            bird.getImage().setSize(100, 100);
+            bird.getImage().setOrigin(bird.getImage().getWidth() /2 -10, bird.getImage().getHeight() /2 +10);
+
+            birds.add(bird);
+            stage.addActor(bird.getImage());
+
+            if (birdData.isActive) {
+                createBirdBody(bird);
+                birdBody.setLinearVelocity(birdData.velocity);
+                firstBird = bird;
+            }
+
+        }
+        // Recreate pigs
+        pigs.clear();
+        for (PigData pigData : gameState.pigs) {
+            Gdx.app.log("1. applyGameState", "pigData.texturePath: " + pigData.texturePath);
+            Pig pig = new Pig(pigData.texturePath, pigData.positionX, pigData.positionY, pigData.width, pigData.height, (int) pigData.health);
+            createPigBody(pig);
+        }
+
+        // Recreate blocks
+        blocks.clear();
+        for (BlockData blockData : gameState.blocks) {
+            Block block = new Block(blockData.texturePath, blockData.positionX, blockData.positionY, blockData.width, blockData.height, (int) blockData.health);
+            createBlockBody(block, blockData.rotation);
+        }
+
+        Gdx.app.log("GameState", "Game state applied successfully.");
+    }
+
+    private void clearGameObjects() {
+        // Remove and destroy birds
+        for (Bird bird : birds) {
+            stage.getActors().removeValue(bird.getImage(), true);
+            if (birdBody != null) {
+                world.destroyBody(birdBody);
+            }
+        }
+        birds.clear();
+        currentBirdIndex = 0;
+
+        // Remove and destroy pigs
+        for (Body pigBody : pigs) {
+            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+            stage.getActors().removeValue(pig.getImage(), true);
+            world.destroyBody(pigBody);
+        }
+        pigs.clear();
+
+        // Remove and destroy blocks
+        for (Body blockBody : blocks) {
+            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+            stage.getActors().removeValue(block.getImage(), true);
+            world.destroyBody(blockBody);
+        }
+        blocks.clear();
+    }
+
+
     private void applyTrajectoryForce() {
-        Vector2 force = new Vector2(dragStart).sub(dragEnd);
+        // Calculate the force vector
+        Vector2 force = new Vector2(dragStart).sub(dragEnd); // Reverse the direction
+//        force.scl(0.00005f); // Scale the force magnitude (adjust for gameplay)
         force.scl(1000000f);
         force.scl(1000000f);
 //        Float MAX_FORCE = 0.0043f;
@@ -271,10 +477,13 @@ public class BonusLevel extends ScreenAdapter {
 //            force.setLength(MAX_FORCE);
 //        }
         force.set(force.x + 10000,force.y + 10000);
+//        force.
 
-        birdBody.setLinearVelocity(0, 0);
+        // Apply the force to the bird's physics body
+        birdBody.setLinearVelocity(0, 0); // Reset current velocity
         birdBody.applyLinearImpulse(force, birdBody.getWorldCenter(), true);
 
+        // Debugging: Log force applied
         System.out.println("Force Applied: " + force);
     }
 
@@ -292,10 +501,13 @@ public class BonusLevel extends ScreenAdapter {
     private void createGroundBody(Integer positionX, Integer positionY, Integer Width, Integer Height) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
+//        bodyDef.position.set(positionX/ PPM, (positionY-10) / PPM);
         bodyDef.position.set(positionX, (positionY));
 
         groundBody = world.createBody(bodyDef);
+
         PolygonShape groundShape = new PolygonShape();
+//        groundShape.setAsBox(Width / PPM, Height/ PPM);
 
         groundShape.setAsBox(Width , Height);
         FixtureDef fixtureDef = new FixtureDef();
@@ -357,33 +569,160 @@ public class BonusLevel extends ScreenAdapter {
 
     }
 
+    private void createBlockBody(Block block, float rotation) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(block.getPositionX(), block.getPositionY());
+
+        Body body = world.createBody(bodyDef);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(block.getWidth() / 2, block.getHeight() / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0.2f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(block);
+
+        shape.dispose();
+        body.setTransform(body.getPosition(), (float) Math.toRadians(rotation));
+        blocks.add(body);
+        stage.addActor(block.getImage());
+    }
+
+//    public void saveGameState() {
+//        GameState gameState = new GameState();
+//
+//        // Save birds
+//        for (int i = 0; i < birds.size(); i++) {
+//            Bird bird = birds.get(i);
+//            Body body = blocks.get(i); // Adjust this if needed
+//            Vector2 velocity = body.getLinearVelocity();
+//            BirdData birdData = new BirdData(bird, velocity);
+//            gameState.birds.add(birdData);
+//        }
+//        gameState.currentBirdIndex = currentBirdIndex;
+//
+//        // Save pigs
+//        for (Body pigBody : pigs) {
+//            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+//            PigData pigData = new PigData(pig);
+//            gameState.pigs.add(pigData);
+//        }
+//
+//        // Save blocks
+//        for (Body blockBody : blocks) {
+//            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+//            float rotation = (float) Math.toDegrees(blockBody.getAngle());
+//            BlockData blockData = new BlockData(block, rotation);
+//            gameState.blocks.add(blockData);
+//        }
+//
+//        // Serialize to JSON
+//        SerializationUtil.saveGameState(gameState);
+//    }
+//    public void saveGameState() {
+//        GameState gameState = new GameState();
+//
+//        // Save birds
+//        for (int i = 0; i < birds.size(); i++) {
+//            Bird bird = birds.get(i);
+//            Vector2 velocity = new Vector2(0, 0); // Default velocity for inactive birds
+//
+//            if (i == currentBirdIndex && birdBody != null) {
+//                velocity = birdBody.getLinearVelocity();
+//            }
+//
+//            BirdData birdData = new BirdData(bird, velocity);
+//            gameState.birds.add(birdData);
+//        }
+//
+//        gameState.currentBirdIndex = currentBirdIndex;
+//
+//        // Save pigs
+//        for (Body pigBody : pigs) {
+//            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+//            PigData pigData = new PigData(pig);
+//            gameState.pigs.add(pigData);
+//        }
+//
+//        // Save blocks
+//        for (Body blockBody : blocks) {
+//            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+//            float rotation = (float) Math.toDegrees(blockBody.getAngle());
+//            BlockData blockData = new BlockData(block, rotation);
+//            gameState.blocks.add(blockData);
+//        }
+//
+//        // Serialize to JSON
+//        SerializationUtil.saveGameState(gameState);
+//    }
+
+    public void saveGameState() {
+        GameState gameState = new GameState();
+
+        // Save birds
+        for (int i = 0; i < birds.size(); i++) {
+            Bird bird = birds.get(i);
+            if(bird.getHealth() <= 0){
+                continue;
+            }
+            Vector2 velocity = (i == currentBirdIndex && birdBody != null) ? birdBody.getLinearVelocity() : new Vector2(0, 0);
+            boolean isActive = (i == currentBirdIndex);
+            BirdData birdData = new BirdData(bird, velocity, isActive);
+            gameState.birds.add(birdData);
+        }
+
+        gameState.currentBirdIndex = currentBirdIndex;
+
+        // Save pigs
+        for (Body pigBody : pigs) {
+            Pig pig = (Pig) pigBody.getFixtureList().first().getUserData();
+            PigData pigData = new PigData(pig);
+            gameState.pigs.add(pigData);
+        }
+
+        // Save blocks
+        for (Body blockBody : blocks) {
+            Block block = (Block) blockBody.getFixtureList().first().getUserData();
+            float rotation = (float) Math.toDegrees(blockBody.getAngle());
+            BlockData blockData = new BlockData(block, rotation);
+            gameState.blocks.add(blockData);
+        }
+
+        SerializationUtil.saveGameState(gameState);
+        Gdx.app.log("GameState", "Game state saved successfully.");
+    }
+
+
     private void createBirdBody(Bird bird) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(320 , 400);
+        bodyDef.position.set(330 , 400);
 
         birdBody = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
 
         circleShape.setRadius(35);
+//        circleShape.setRadius(bird.getWidth()/2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 1f;
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 0.7f;
+        if(bird.getTexturePath().equalsIgnoreCase("shake_bird.png")){
+            fixtureDef.density = 1.4f;
+        }
 
         Fixture fixture = birdBody.createFixture(fixtureDef);
         fixture.setUserData(bird);
 
-        if(bird.getTexturePath().equalsIgnoreCase("eagle.png")) {
-            eagle_music = Gdx.audio.newMusic(Gdx.files.internal("eagle.mp3"));
-            eagle_music.setLooping(false);
-            eagle_music.play();
-            eagle_music.setVolume(0.5f);
-        }
-
         circleShape.dispose();
     }
+
 
     private void createPigBody(MapObject obj){
 
@@ -426,6 +765,31 @@ public class BonusLevel extends ScreenAdapter {
         stage.addActor(pig.getImage());
     }
 
+    private void createPigBody(Pig pig){
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(pig.getPositionX() , pig.getPositionY());
+
+        Body body = world.createBody(bodyDef);
+        PolygonShape bodyShape = new PolygonShape();
+        bodyShape.setAsBox(pig.getWidth() /2, pig.getHeight()/ 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = bodyShape;
+        fixtureDef.density = 1f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0.2f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(pig);
+
+        bodyShape.dispose();
+        pigs.add(body);
+        stage.addActor(pig.getImage());
+    }
+
+
+
     private void initializeCollisionListener() {
         world.setContactListener(new ContactListener() {
             @Override
@@ -433,7 +797,6 @@ public class BonusLevel extends ScreenAdapter {
                 Fixture fixtureA = contact.getFixtureA();
                 Fixture fixtureB = contact.getFixtureB();
 
-                // Check if either fixture belongs to the bird
                 if (isBirdFixture(fixtureA) && isBlockFixture(fixtureB)) {
                     handleCollisionWithBlock(fixtureB);
                 }
@@ -446,41 +809,92 @@ public class BonusLevel extends ScreenAdapter {
                 else if (isBirdFixture(fixtureA) && isPigFixture(fixtureB)) {
                     handleCollisionWithPig(fixtureB);
                 }
-
-
-//                Bird currentBird = birds.get(currentBirdIndex);
-//                if (currentBird.isDestroyed()) {
-//                    stage.getActors().removeValue(currentBird.getImage(), true);
-//                    if (currentBirdIndex + 1 < birds.size()) {
-//                        currentBirdIndex++;
-//                        Bird nextBird = birds.get(currentBirdIndex);
-//                        stage.addActor(nextBird.getImage());
-//                        createBirdBody(); // Reinitialize physics body for the new bird
-//                        System.out.println("Switched to the next bird!");
-//                    } else {
-//                        System.out.println("No more birds available! Game over or end level.");
-//                        // Handle level failure or end game logic here
-//                    }
-//                }
-
             }
 
             @Override
-            public void endContact(Contact contact) {
-                // Optionally handle end of collision
-            }
+            public void endContact(Contact contact) {}
 
             @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-                // Optional: handle pre-solve logic
-            }
+            public void preSolve(Contact contact, Manifold oldManifold) {}
 
             @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-                // Optional: handle post-solve logic (e.g., check collision impulse)
-            }
+            public void postSolve(Contact contact, ContactImpulse impulse) {}
         });
     }
+
+
+    private boolean isBirdFixture(Fixture fixture) {
+        if (fixture.getUserData() instanceof Bird) {
+            Bird bird = (Bird) fixture.getUserData();
+            return birds.get(currentBirdIndex) == bird;
+        }
+        return false;
+    }
+
+    private boolean isPowerBird(Fixture fixture) {
+        if (fixture.getUserData() instanceof Bird) {
+            Bird bird = (Bird) fixture.getUserData();
+            if(birds.get(currentBirdIndex) == bird) {
+                if (bird.getTexturePath().equalsIgnoreCase("shake_bird.png")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isBlockFixture(Fixture fixture) {
+        return fixture.getUserData() instanceof Block;
+    }
+
+    private boolean isPigFixture(Fixture fixture){
+        return  fixture.getUserData() instanceof Pig;
+    }
+
+    private void handleCollisionWithBlock(Fixture blockFixture) {
+        Block block = (Block) blockFixture.getUserData();
+        System.out.println("Bird collided with block: " + block);
+
+        block.decrementHealth();
+
+        if (block.isDestroyed()) {
+            bodiesToRemove.add(blockFixture.getBody());
+            block.getImage().setColor(1, 0, 0, 1); // Optional visual feedback for removal
+        } else {
+            block.getImage().setColor(1, 1, 0, 1); // Optional visual feedback for one collision
+        }
+
+        Bird currentBird = birds.get(currentBirdIndex);
+        currentBird.decrementHealth();
+        if (currentBird.isDestroyed()) {
+            System.out.println("Current bird destroyed!");
+            birdsToRemove.add(currentBird);
+
+        }
+    }
+
+    private void handleCollisionWithPig(Fixture pigFixture) {
+        Pig pig = (Pig) pigFixture.getUserData();
+        System.out.println("Bird collided with Pig: " + pig);
+
+        pig.decrementHealth();
+
+        if (pig.isDestroyed()) {
+            bodiesToRemove_PIG.add(pigFixture.getBody());
+            pig.getImage().setColor(1, 0, 0, 1); // Optional visual feedback for removal
+        } else {
+            pig.getImage().setColor(1, 1, 0, 1); // Optional visual feedback for one collision
+        }
+
+        Bird currentBird = birds.get(currentBirdIndex);
+        currentBird.decrementHealth();
+        if (currentBird.isDestroyed()) {
+            System.out.println("Current bird destroyed!");
+            birdsToRemove.add(currentBird);
+
+        }
+    }
+
 
     private void applyMagnetism(Bird bird, Body birdBody) {
         float radius = 500f;
@@ -506,81 +920,6 @@ public class BonusLevel extends ScreenAdapter {
 
     }
 
-    private boolean isBirdFixture(Fixture fixture) {
-        if (fixture.getUserData() instanceof Bird) { // Check fixture's user data
-            Bird bird = (Bird) fixture.getUserData();
-            return birds.get(currentBirdIndex) == bird; // Ensure it's the active bird
-        }
-        return false;
-    }
-
-
-    private boolean isBlockFixture(Fixture fixture) {
-        return fixture.getUserData() instanceof Block;
-    }
-
-    private boolean isPigFixture(Fixture fixture){
-        return  fixture.getUserData() instanceof Pig;
-    }
-
-    private void handleCollisionWithBlock(Fixture blockFixture) {
-        Block block = (Block) blockFixture.getUserData();
-        System.out.println("Bird collided with block: " + block);
-
-        block.decrementHealth();
-
-        if (block.isDestroyed()) {
-            bodiesToRemove.add(blockFixture.getBody());
-            block.getImage().setColor(1, 0, 0, 1);
-        } else {
-            block.getImage().setColor(1, 1, 0, 1);
-        }
-
-        Bird currentBird = birds.get(currentBirdIndex);
-        currentBird.decrementHealth();
-        if (currentBird.isDestroyed()) {
-            System.out.println("Current bird destroyed!");
-            birdsToRemove.add(currentBird);
-
-        }
-    }
-
-//    private void handleCollisionWithPig(Fixture pigFixture) {
-//        Pig pig = (Pig) pigFixture.getUserData();
-//        System.out.println("Bird collided with Pig: " + pig);
-//
-//        pig.decrementHealth();
-//
-//        if (pig.isDestroyed()) {
-//            bodiesToRemove_PIG.add(pigFixture.getBody());
-//            pig.getImage().setColor(1, 0, 0, 1); // Optional visual feedback for removal
-//        }
-//        else {
-//            pig.getImage().setColor(1, 1, 0, 1); // Optional visual feedback for one collision
-//        }
-//    }
-    private void handleCollisionWithPig(Fixture pigFixture) {
-        Pig pig = (Pig) pigFixture.getUserData();
-        System.out.println("Bird collided with Pig: " + pig);
-
-        pig.decrementHealth();
-
-        if (pig.isDestroyed()) {
-            bodiesToRemove_PIG.add(pigFixture.getBody());
-            pig.getImage().setColor(1, 0, 0, 1);
-        } else {
-            pig.getImage().setColor(1, 1, 0, 1);
-        }
-
-        // Decrement bird's health
-        Bird currentBird = birds.get(currentBirdIndex);
-        currentBird.decrementHealth();
-        if (currentBird.isDestroyed()) {
-            System.out.println("Current bird destroyed!");
-            birdsToRemove.add(currentBird);
-
-        }
-    }
 
 
 
@@ -589,6 +928,15 @@ public class BonusLevel extends ScreenAdapter {
         camera.update();
         renderer.setView(camera);
         renderer.render();
+
+        if(epic_music == null){
+            if(currentBirdIndex == birds.size() - 1) {
+                epic_music = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
+                epic_music.setLooping(true);
+                epic_music.setVolume(0.01f);
+                epic_music.play();
+            }
+        }
 
         if (birdBody != null) {
             birdBody.setAngularDamping(2f);
@@ -663,10 +1011,12 @@ public class BonusLevel extends ScreenAdapter {
                 world.step(TIME_STEP, 6, 2);
                 accumulator -= TIME_STEP;
             }
-        } else if (showPause && overlayPause.isActive()) {
+        }
+        else if (showPause && overlayPause.isActive()) {
             Gdx.input.setInputProcessor(overlayPause.getStage());
             overlayPause.render(delta);
-        } else {
+        }
+        else {
             world.step(1 / FPS, 6, 2);
             accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
 
@@ -728,17 +1078,18 @@ public class BonusLevel extends ScreenAdapter {
                 currentBirdIndex++;
                 Bird nextBird = birds.get(currentBirdIndex);
                 stage.addActor(nextBird.getImage());
-                createBirdBody(nextBird); // Create physics body for the next bird
+                createBirdBody(nextBird);
                 System.out.println("Switched to the next bird!");
-            } else {
+            }
+            else {
                 System.out.println("No more birds available! Game over or end level.");
 
                 if(pigs.isEmpty()){
-                    if (eagle_music!= null) eagle_music.dispose();
+                    if (epic_music != null) epic_music.dispose();
                     game.setScreen(new WinScreen(game));
                 }
                 else{
-                    if (eagle_music!= null) eagle_music.dispose();
+                    if (epic_music != null) epic_music.dispose();
                     game.setScreen(new LoseScreen(game));
                 }
             }
@@ -748,6 +1099,7 @@ public class BonusLevel extends ScreenAdapter {
         stage.act(delta);
         stage.draw();
     }
+
 
     public void resumeLevel(){
         game.setScreen(this);
@@ -759,12 +1111,12 @@ public class BonusLevel extends ScreenAdapter {
         dispose();
 //        game = null;
 //        Gdx.input.setInputProcessor(inputMultiplexer);
-        game.setScreen(new BonusLevel(game));
+        game.setScreen(new Level4(game));
     }
 
     public void navigateToTutorialPage() {
         System.out.println("Going to TutorialGame ");
-        if (eagle_music!= null) eagle_music.dispose();
+        if (epic_music != null) epic_music.dispose();
         game.setScreen(new TutorialGame(game));
     }
 
@@ -779,6 +1131,8 @@ public class BonusLevel extends ScreenAdapter {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT );
         stage.getViewport().update(width, height, true);
         pauseButton.setPosition(Gdx.graphics.getWidth()*0.9f - pauseButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.9f - pauseButton.getHeight() *0.5f);
+        saveButton.setPosition(Gdx.graphics.getWidth()*0.6f - saveButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.9f - saveButton.getHeight() *0.5f);
+        loadButton.setPosition(Gdx.graphics.getWidth()*0.4f - loadButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.9f - loadButton.getHeight() *0.5f);
 
     }
 
@@ -790,7 +1144,7 @@ public class BonusLevel extends ScreenAdapter {
         renderer.dispose();
         world.dispose();
         debugRenderer.dispose();
-        if (eagle_music!= null) eagle_music.dispose();
+        if (epic_music != null) epic_music.dispose();
 
     }
 }

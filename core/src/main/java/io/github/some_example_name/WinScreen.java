@@ -78,6 +78,7 @@ public class WinScreen extends ScreenAdapter {
 
         winMusic = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
         winMusic.setLooping(true);
+        winMusic.setVolume(0.01f);
         winMusic.play();
 
         // Add Exit Button
@@ -86,6 +87,7 @@ public class WinScreen extends ScreenAdapter {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                if (winMusic != null) winMusic.dispose();
                 game.setScreen(new TutorialGame(game)); // Exit to tutorial page
             }
         });
