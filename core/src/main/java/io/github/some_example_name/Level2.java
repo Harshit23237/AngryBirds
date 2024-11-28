@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.Game.TutorialGame;
+import com.badlogic.gdx.audio.Music;
 
 import java.util.ArrayList;
 
@@ -82,7 +84,7 @@ public class Level2 extends ScreenAdapter {
     private ArrayList<Bird> birdsToRemove = new ArrayList<>();
 
     private float birdInactiveTime = 0f; // Time the current bird has been inactive
-    private static final float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
+    private float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
     private static final float VELOCITY_THRESHOLD = 0.1f; // Threshold for inactivity
 
 
@@ -100,6 +102,8 @@ public class Level2 extends ScreenAdapter {
     private ImageButton loadButton;
 
     private Boolean hasMoved = false;
+
+    private Music epic_music;
 
 
 
@@ -175,8 +179,8 @@ public class Level2 extends ScreenAdapter {
         birds = new ArrayList<>();
         currentBirdIndex = 0;
 
-        birds.add(new Bird("bird1.png", 100, 100, 12));
-        birds.add(new Bird("bird1.png", 100, 100, 12));
+        birds.add(new Bird("bird1.png", 100, 100, 14));
+        birds.add(new Bird("bird1.png", 100, 100, 14));
         birds.add(new Bird("green_bird.png", 100, 100, 8));
 
         firstBird = birds.get(currentBirdIndex);
@@ -228,11 +232,16 @@ public class Level2 extends ScreenAdapter {
         createGroundBody(0, 0, 1980, 180);
         createGroundBody(270, 280, 50, 80);
         createGroundBody(0, 147, 320, 100);
-        createGroundBody(1920, 162, 400, 100);
+        createGroundBody(1920, 142, 400, 100);
 //       WALL
-        createGroundBody(1980, 100, 10, 900);
+        createGroundBody(1980, 100, 10, 1000);
+        createGroundBody(-15, 100, 10, 1000);
+
 //        UP WALL
         createGroundBody(0, 1070, 1960, 10);
+//        up catapult
+        createGroundBody(280,500, 2, 10);
+
 
 
         createBirdBody(firstBird);
@@ -582,7 +591,7 @@ public class Level2 extends ScreenAdapter {
     private void createBirdBody(Bird bird) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(250 , 500);
+        bodyDef.position.set(280 , 450);
 
         birdBody = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
@@ -777,6 +786,15 @@ public class Level2 extends ScreenAdapter {
         renderer.setView(camera);
         renderer.render();
 
+        if(epic_music == null){
+            if(currentBirdIndex == birds.size() - 1) {
+                epic_music = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
+                epic_music.setLooping(true);
+                epic_music.play();
+                epic_music.setVolume(0.2f);
+            }
+        }
+
         if (birdBody != null) {
             birdBody.setAngularDamping(2f);
             Vector2 position = birdBody.getPosition();
@@ -791,11 +809,17 @@ public class Level2 extends ScreenAdapter {
             );
             if(currentBird.getTexturePath().equalsIgnoreCase("green_bird.png")){
                 System.out.println("gravity is now up");
-                GRAVITY = new Vector2(0,5);
+                GRAVITY = new Vector2(0,10);
+                INACTIVE_TIME_THRESHOLD = 5f;
+                createGroundBody(1920, 145, 400, 100);
+                createGroundBody(0, 0, 1980, 180);
+                if(birdInactiveTime >= 3 && birdInactiveTime <= 3.2){
+                    createGroundBody(280,497, 2, 10);
+                }
                 world.setGravity(GRAVITY);
             }
             else{
-                GRAVITY = new Vector2(0,-100);
+                GRAVITY = new Vector2(0,-18);
                 world.setGravity(GRAVITY);
             }
 
@@ -933,9 +957,11 @@ public class Level2 extends ScreenAdapter {
                 System.out.println("No more birds available! Game over or end level.");
 
                 if(pigs.isEmpty()){
+                    if (epic_music != null) epic_music.dispose();
                     game.setScreen(new WinScreen(game));
                 }
                 else{
+                    if (epic_music != null) epic_music.dispose();
                     game.setScreen(new LoseScreen(game));
                 }
             }
@@ -962,6 +988,7 @@ public class Level2 extends ScreenAdapter {
 
     public void navigateToTutorialPage() {
         System.out.println("Going to TutorialGame ");
+        if (epic_music != null) epic_music.dispose();
         game.setScreen(new TutorialGame(game));
     }
 
@@ -989,5 +1016,7 @@ public class Level2 extends ScreenAdapter {
         renderer.dispose();
         world.dispose();
         debugRenderer.dispose();
+        if (epic_music != null) epic_music.dispose();
+
     }
 }

@@ -893,7 +893,6 @@ public class Level3 extends ScreenAdapter {
         renderer.render();
 
         if(epic_music == null){
-//            int num_of_birds = (int) birds.size();
             if(currentBirdIndex == birds.size() - 1) {
                 epic_music = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
                 epic_music.setLooping(true);
@@ -1075,6 +1074,7 @@ public class Level3 extends ScreenAdapter {
 
     public void navigateToTutorialPage() {
         System.out.println("Going to TutorialGame ");
+        if (epic_music != null) epic_music.dispose();
         game.setScreen(new TutorialGame(game));
     }
 
