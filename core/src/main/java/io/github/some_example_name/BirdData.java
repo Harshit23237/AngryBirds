@@ -10,7 +10,7 @@ public class BirdData {
     public Vector2 velocity;
     public Boolean isActive;
 
-    public BirdData() {} // Default constructor for serialization
+    public BirdData() {}
 
     public BirdData(Bird bird, Vector2 velocity) {
         this.texturePath = bird.getTexturePath();

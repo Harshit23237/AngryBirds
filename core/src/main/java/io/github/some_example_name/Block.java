@@ -23,11 +23,12 @@ public class Block {
 //        this.heightPercent=height;
         this.image = new Image(texture);
         this.image.setSize(width, height);
-        this.health = 1; // Initial health (2 collisions needed to destroy)
+        this.health = 1;
     }
     public Block(String texturePath, float x, float y, float width, float height, int health) {
         this.texturePath = texturePath;
         this.texture = new Texture(Gdx.files.internal(texturePath));
+//        this.texture = new Texture(texturePath);
         this.image = new Image(texture);
         this.image.setBounds(x, y, width, height);
         this.health = health;

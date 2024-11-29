@@ -30,10 +30,12 @@ public class WinScreen extends ScreenAdapter {
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
     private Music winMusic;
+    String music_PATH = "win_music.mp3";
 
     public WinScreen(Game game) {
         this.game = game;
     }
+    public WinScreen(){}
 
     private ArrayList<Drawable> level_button_texture(String up_texture, String down_texture ) {
         Texture buttonUpTexture = new Texture(Gdx.files.internal(up_texture));
@@ -68,10 +70,10 @@ public class WinScreen extends ScreenAdapter {
         return button;
     }
 
+
     @Override
     public void show() {
         background_texture = new Texture(Gdx.files.internal("win_bg3.jpg"));
-
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
@@ -87,19 +89,32 @@ public class WinScreen extends ScreenAdapter {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (winMusic != null) winMusic.dispose();
-                game.setScreen(new TutorialGame(game)); // Exit to tutorial page
+//                if (winMusic != null) winMusic.dispose();
+                if(isWinMusic("win_music.mp3") && isPlayingMusic()){
+                    winMusic.dispose();
+                }
+                game.setScreen(new TutorialGame(game));
             }
         });
 
+    }
+
+    public Boolean isWinMusic(String s){
+        if(music_PATH == null) return false;
+        if(music_PATH.equals(s)){
+            return true;
+        }
+        return false;
+    }
+    public Boolean isPlayingMusic(){
+        if(winMusic == null) return false;
+        return winMusic.isPlaying();
     }
 
 
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         exitButton.setPosition(Gdx.graphics.getWidth() * 0.5f - exitButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.15f - exitButton.getHeight() *0.5f);
-
-
     }
         @Override
     public void render(float delta) {
@@ -111,7 +126,7 @@ public class WinScreen extends ScreenAdapter {
         batch.end();
 
 
-        Gdx.input.setInputProcessor(stage);     // Revert to main stage input
+        Gdx.input.setInputProcessor(stage);
         stage.act(delta);
         stage.draw();
     }

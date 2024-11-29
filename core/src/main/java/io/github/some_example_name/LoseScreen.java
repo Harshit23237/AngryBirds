@@ -18,6 +18,7 @@ import io.github.Game.MyGame;
 import io.github.Game.TutorialGame;
 
 import java.util.ArrayList;
+import com.badlogic.gdx.audio.Music;
 
 public class LoseScreen extends ScreenAdapter {
     private Stage stage;
@@ -29,9 +30,16 @@ public class LoseScreen extends ScreenAdapter {
 
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
+
+    private Music loseMusic;
+    String music_PATH = "loss_music.mp3";
+
     public LoseScreen(Game game) {
         this.game = game;
     }
+
+    public LoseScreen() {}
+
     private ArrayList<Drawable> level_button_texture(String up_texture, String down_texture ) {
         Texture buttonUpTexture = new Texture(Gdx.files.internal(up_texture));
         Texture buttonDownTexture = new Texture(Gdx.files.internal(down_texture));
@@ -68,6 +76,12 @@ public class LoseScreen extends ScreenAdapter {
     public void show() {
        background_texture = new Texture(Gdx.files.internal("loss_bg.jpeg"));
 
+        loseMusic = Gdx.audio.newMusic(Gdx.files.internal("loss_music.mp3"));
+        loseMusic.setLooping(true);
+        loseMusic.setVolume(0.4f);
+        loseMusic.play();
+
+
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
@@ -76,11 +90,27 @@ public class LoseScreen extends ScreenAdapter {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-            game.setScreen(new TutorialGame(game)); // Exit to tutorial page
+                if(isLoseMusic("loss_music.mp3") && isPlayingMusic()){
+                    loseMusic.dispose();
+                }
+                game.setScreen(new TutorialGame(game));
             }
         });
-
     }
+
+
+    public Boolean isLoseMusic(String s){
+        if(music_PATH == null) return false;
+        if(music_PATH.equals(s)){
+            return true;
+        }
+        return false;
+    }
+    public Boolean isPlayingMusic(){
+        if(loseMusic == null) return false;
+        return loseMusic.isPlaying();
+    }
+
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
         exitButton.setPosition(Gdx.graphics.getWidth()*0.5f - exitButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.3f - exitButton.getHeight() *0.5f);
@@ -106,5 +136,6 @@ public class LoseScreen extends ScreenAdapter {
     public void dispose() {
         background_texture.dispose();
         stage.dispose();
+        if (loseMusic != null) loseMusic.dispose();
     }
 }

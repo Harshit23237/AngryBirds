@@ -309,9 +309,8 @@ public class Level3 extends ScreenAdapter {
 
 
         Gdx.input.setInputProcessor(inputMultiplexer);
-
-
     }
+
 
 
 //    private void applyGameState(GameState gameState) {
@@ -491,7 +490,7 @@ public class Level3 extends ScreenAdapter {
         System.out.println("Force Applied: " + force);
     }
 
-    private boolean isWithinCustomArea(Vector2 touchPoint) {
+    public boolean isWithinCustomArea(Vector2 touchPoint) {
         float customX = 500;
         float customY = 500;
         float width = 300;

@@ -8,7 +8,6 @@ public class SerializationUtil {
 
     private static final String SAVE_FILE = "savegame.json";
 
-    // Save the game state to a JSON file
     public static void saveGameState(GameState gameState) {
         Json json = new Json();
         String jsonString = json.toJson(gameState);
@@ -17,7 +16,6 @@ public class SerializationUtil {
         Gdx.app.log("Serialization", "Game state saved.");
     }
 
-    // Load the game state from a JSON file
     public static GameState loadGameState() {
         FileHandle file = Gdx.files.local(SAVE_FILE);
         if (!file.exists()) {

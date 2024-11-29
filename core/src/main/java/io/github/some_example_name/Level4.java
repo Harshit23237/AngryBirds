@@ -549,14 +549,18 @@ public class Level4 extends ScreenAdapter {
         Fixture fixture = blockBody.createFixture(fixtureDef);
         Block block = null;
         System.out.print("OBJECT ID: "+obj.getProperties().get("id") + "\t");
-        if (obj.getProperties().get("id").equals("1") || obj.getProperties().get("id").equals("5") || obj.getProperties().get("id").equals("2") ){
+        if (obj.getProperties().get("id").equals("1")){
+            Integer GLASS_HEALTH = 1;
+            block = new Block("block2.png", rect.x, rect.y, rect.width, rect.height, GLASS_HEALTH);
+        }
+        else if (obj.getProperties().get("id").equals("2") ){
             System.out.println("WOOD TEXTURE");
-            Integer WOOD_HEALTH = 1;
+            Integer WOOD_HEALTH = 2;
             block = new Block("block1.png", rect.x, rect.y, rect.width, rect.height, WOOD_HEALTH );
         }
         else if( obj.getProperties().get("id").equals("3") ){
             System.out.println("ROCK TEXTURE");
-            Integer ROCK_HEALTH = 2;
+            Integer ROCK_HEALTH = 3;
             block = new Block("block__3.png", rect.x, rect.y, rect.width, rect.height, ROCK_HEALTH );
         }
         else if(obj.getProperties().get("id").equals("7")){
@@ -942,7 +946,7 @@ public class Level4 extends ScreenAdapter {
             if(currentBirdIndex == birds.size() - 1) {
                 epic_music = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
                 epic_music.setLooping(true);
-                epic_music.setVolume(0.01f);
+                epic_music.setVolume(0.1f);
                 epic_music.play();
             }
         }

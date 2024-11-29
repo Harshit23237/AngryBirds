@@ -11,7 +11,7 @@ public class BlockData {
     public float rotation;
     public float health;
 
-    public BlockData() {} // Default constructor for serialization
+    public BlockData() {}
 
     public BlockData(Block block, float rotation) {
         this.texturePath = block.getTexturePath();

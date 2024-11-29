@@ -1,6 +1,7 @@
 package io.github.Game;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import io.github.Game.SettingsOverlay;
 import io.github.Game.StartGame;
 import com.badlogic.gdx.Game;
@@ -73,8 +74,11 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
 
         button.setHeight(button_height); button.setWidth(button_width);
         stage.addActor(button);
+
         return button;
     }
+
+
 
     @Override
     public void show() {
