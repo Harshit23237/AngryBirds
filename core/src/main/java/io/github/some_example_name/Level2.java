@@ -31,8 +31,7 @@ public class Level2 extends ScreenAdapter {
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
-    private static final float FPS = 90f;
-    private static final float PPM = 100f; // Pixels Per Meter
+    private static final float FPS = 120f;
 
     private Stage stage;
     private SpriteBatch batch;
@@ -781,6 +780,40 @@ public class Level2 extends ScreenAdapter {
 
 
 
+    private void DrawTrajectory(){
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(0, 1, 1, 1);
+
+        Vector2 initialVelocity = new Vector2(
+            -(dragEnd.x - dragStart.x) ,
+            -(dragEnd.y - dragStart.y)
+        );
+        Vector2 birdStartPosition = birdBody != null ? birdBody.getPosition() : new Vector2(250, 500);
+        Vector2 gravity = world.getGravity();
+        gravity.scl(2.5f);
+
+        Vector2 currentPosition = new Vector2(birdStartPosition);
+        Vector2 velocity = new Vector2(initialVelocity);
+        float timeStep = 0.3f;
+        int maxSteps = 8;
+
+        for (int i = 0; i < maxSteps; i++) {
+            Vector2 nextPosition = new Vector2(
+                currentPosition.x + velocity.x * timeStep,
+                currentPosition.y + velocity.y * timeStep
+            );
+
+            shapeRenderer.circle(nextPosition.x, nextPosition.y, 5);
+            currentPosition.set(nextPosition);
+
+            velocity.add(gravity.x * timeStep, gravity.y * timeStep);
+
+        }
+
+        shapeRenderer.end();
+    }
+
 
     @Override
     public void render(float delta) {
@@ -902,14 +935,7 @@ public class Level2 extends ScreenAdapter {
         }
 
         if (isDragging) {
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(1, 0, 0, 1);
-            shapeRenderer.line(
-                dragStart.x, dragStart.y,
-                dragEnd.x, dragEnd.y
-            );
-            shapeRenderer.end();
+            DrawTrajectory();
         }
 
         debugRenderer.render(world, camera.combined);

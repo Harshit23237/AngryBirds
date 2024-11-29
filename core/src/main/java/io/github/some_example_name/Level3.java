@@ -927,9 +927,6 @@ public class Level3 extends ScreenAdapter {
         shapeRenderer.end();
     }
 
-
-
-
     @Override
     public void render(float delta) {
         camera.update();
@@ -1006,7 +1003,6 @@ public class Level3 extends ScreenAdapter {
             );
         }
 
-        // Physics step
         if (!showPause) {
             world.step(1 / FPS, 6, 2);
             accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
@@ -1031,14 +1027,6 @@ public class Level3 extends ScreenAdapter {
         }
 
         if (isDragging) {
-//            shapeRenderer.setProjectionMatrix(camera.combined);
-//            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//            shapeRenderer.setColor(1, 0, 0, 1);
-//            shapeRenderer.line(
-//                dragStart.x, dragStart.y,
-//                dragEnd.x, dragEnd.y
-//            );
-//            shapeRenderer.end();
             DrawTrajectory();
         }
 
