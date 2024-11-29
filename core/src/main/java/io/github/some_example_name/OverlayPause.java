@@ -25,9 +25,9 @@ public class OverlayPause extends ScreenAdapter {
 //    private TextureRegion pause_bg_region;
     private Texture pauseBackground;
     private ImageButton resumeButton;
-    private ImageButton saveButton;
+//    private ImageButton saveButton;
     private ImageButton restartButton;
-    private ImageButton settingsButton;
+//    private ImageButton settingsButton;
     private ImageButton exitButton;
     public Boolean isActive = false;
 //    private LevelPage levelPage;
@@ -88,8 +88,7 @@ public class OverlayPause extends ScreenAdapter {
 
         pauseStage = new Stage(new ScreenViewport());
 
-        // Create buttons
-        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.75f);
+        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.65f);
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -99,45 +98,29 @@ public class OverlayPause extends ScreenAdapter {
 
         });
 
-        saveButton = createImageButton("save_game.png", "save_game.png", 300, 100, 0.455f, 0.63f);
-        saveButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Game Saved!");
-                if (!overlaySaveGame.isActive()) {
-                    showSave = true;
-                    overlaySaveGame.setActive(true);
-                    Gdx.input.setInputProcessor(overlaySaveGame.getStage()); // Set input processor to settings overlay
-                    pauseStage.getRoot().setVisible(false); // Hide pause overlay
 
-                }
-            }
-        });
-
-        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.51f);
+        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.52f);
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 level4.restartLevel();
-//                closeOverlay();
                 System.out.println("Level Restarted!");
             }
         });
 
-        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.25f);
-
-        settingsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (!settingsOverlay.isActive()) {
-                    showSettings = true;
-                    settingsOverlay.setActive(true);
-                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
-                    pauseStage.getRoot().setVisible(false);
-                }
-            }
-        });
+//        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.28f);
+//        settingsButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//
+//                if (!settingsOverlay.isActive()) {
+//                    showSettings = true;
+//                    settingsOverlay.setActive(true);
+//                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
+//                    pauseStage.getRoot().setVisible(false);
+//                }
+//            }
+//        });
 
         exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.39f);
         exitButton.addListener(new ClickListener() {
@@ -169,7 +152,7 @@ public class OverlayPause extends ScreenAdapter {
         pauseStage = new Stage(new ScreenViewport());
 
         // Create buttons
-        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.75f);
+        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.65f);
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -179,22 +162,8 @@ public class OverlayPause extends ScreenAdapter {
 
         });
 
-        saveButton = createImageButton("save_game.png", "save_game.png", 300, 100, 0.455f, 0.63f);
-        saveButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Game Saved!");
-                if (!overlaySaveGame.isActive()) {
-                    showSave = true;
-                    overlaySaveGame.setActive(true);
-                    Gdx.input.setInputProcessor(overlaySaveGame.getStage()); // Set input processor to settings overlay
-                    pauseStage.getRoot().setVisible(false); // Hide pause overlay
 
-                }
-            }
-        });
-
-        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.51f);
+        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.52f);
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -204,22 +173,21 @@ public class OverlayPause extends ScreenAdapter {
             }
         });
 
-        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.25f);
+//        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.28f);
+//        settingsButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//
+//                if (!settingsOverlay.isActive()) {
+//                    showSettings = true;
+//                    settingsOverlay.setActive(true);
+//                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
+//                    pauseStage.getRoot().setVisible(false);
+//                }
+//            }
+//        });
 
-        settingsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (!settingsOverlay.isActive()) {
-                    showSettings = true;
-                    settingsOverlay.setActive(true);
-                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
-                    pauseStage.getRoot().setVisible(false);
-                }
-            }
-        });
-
-        exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.39f);
+        exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.4f);
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -241,15 +209,11 @@ public class OverlayPause extends ScreenAdapter {
         this.level2 = level2;
         batch = new SpriteBatch();
         pauseBackground = new Texture(Gdx.files.internal("Pause_bg.png"));
-//        pauseBackground.
-//        pause_bg_region = new TextureRegion(pauseBackground);
-//        pause_bg_region.setRegionX(100);
-
 
         pauseStage = new Stage(new ScreenViewport());
 
         // Create buttons
-        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.75f);
+        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.65f);
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -259,22 +223,7 @@ public class OverlayPause extends ScreenAdapter {
 
         });
 
-        saveButton = createImageButton("save_game.png", "save_game.png", 300, 100, 0.455f, 0.63f);
-        saveButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Game Saved!");
-                if (!overlaySaveGame.isActive()) {
-                    showSave = true;
-                    overlaySaveGame.setActive(true);
-                    Gdx.input.setInputProcessor(overlaySaveGame.getStage()); // Set input processor to settings overlay
-                    pauseStage.getRoot().setVisible(false); // Hide pause overlay
-
-                }
-            }
-        });
-
-        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.51f);
+        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.52f);
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -284,22 +233,20 @@ public class OverlayPause extends ScreenAdapter {
             }
         });
 
-        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.25f);
+//        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.28f);
+//        settingsButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                if (!settingsOverlay.isActive()) {
+//                    showSettings = true;
+//                    settingsOverlay.setActive(true);
+//                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
+//                    pauseStage.getRoot().setVisible(false);
+//                }
+//            }
+//        });
 
-        settingsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (!settingsOverlay.isActive()) {
-                    showSettings = true;
-                    settingsOverlay.setActive(true);
-                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
-                    pauseStage.getRoot().setVisible(false);
-                }
-            }
-        });
-
-        exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.39f);
+        exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.4f);
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -329,7 +276,7 @@ public class OverlayPause extends ScreenAdapter {
         pauseStage = new Stage(new ScreenViewport());
 
         // Create buttons
-        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.75f);
+        resumeButton = createImageButton("resume.png", "resume.png", 300, 100, 0.455f, 0.65f);
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -339,22 +286,8 @@ public class OverlayPause extends ScreenAdapter {
 
         });
 
-        saveButton = createImageButton("save_game.png", "save_game.png", 300, 100, 0.455f, 0.63f);
-        saveButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Game Saved!");
-                if (!overlaySaveGame.isActive()) {
-                    showSave = true;
-                    overlaySaveGame.setActive(true);
-                    Gdx.input.setInputProcessor(overlaySaveGame.getStage()); // Set input processor to settings overlay
-                    pauseStage.getRoot().setVisible(false); // Hide pause overlay
 
-                }
-            }
-        });
-
-        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.51f);
+        restartButton = createImageButton("restart.png", "restart.png", 300, 100, 0.455f, 0.52f);
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -364,22 +297,20 @@ public class OverlayPause extends ScreenAdapter {
             }
         });
 
-        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.25f);
+//        settingsButton = createImageButton("settings_button.png", "settings_button.png", 100, 100, 0.42f, 0.28f);
+//        settingsButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                if (!settingsOverlay.isActive()) {
+//                    showSettings = true;
+//                    settingsOverlay.setActive(true);
+//                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
+//                    pauseStage.getRoot().setVisible(false);
+//                }
+//            }
+//        });
 
-        settingsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (!settingsOverlay.isActive()) {
-                    showSettings = true;
-                    settingsOverlay.setActive(true);
-                    Gdx.input.setInputProcessor(settingsOverlay.getStage());
-                    pauseStage.getRoot().setVisible(false);
-                }
-            }
-        });
-
-        exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.39f);
+        exitButton = createImageButton("exit_level.png", "exit_level.png", 300, 100, 0.455f, 0.4f);
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -447,12 +378,11 @@ public class OverlayPause extends ScreenAdapter {
     public void resize(int width, int height) {
 
         pauseStage.getViewport().update(width, height, true);
-        resumeButton.setPosition(Gdx.graphics.getWidth() *0.5f - resumeButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.75f - resumeButton.getHeight() *0.5f);
-        saveButton.setPosition(Gdx.graphics.getWidth() * 0.1f - saveButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - saveButton.getHeight() *0.5f);
-        restartButton.setPosition(Gdx.graphics.getWidth() * 0.1f - restartButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.4f - restartButton.getHeight() *0.5f);
+        resumeButton.setPosition(Gdx.graphics.getWidth() *0.45f - resumeButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.75f - resumeButton.getHeight() *0.5f);
+        restartButton.setPosition(Gdx.graphics.getWidth() * 0.3f - restartButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.4f - restartButton.getHeight() *0.5f);
         exitButton.setPosition(Gdx.graphics.getWidth() * 0.1f - exitButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.3f - exitButton.getHeight() *0.5f);
 
-        settingsButton.setPosition(Gdx.graphics.getWidth() * 0.65f - settingsButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - settingsButton.getHeight() *0.5f);
+//        settingsButton.setPosition(Gdx.graphics.getWidth() * 0.65f - settingsButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - settingsButton.getHeight() *0.5f);
 
     }
 
