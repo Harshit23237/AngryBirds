@@ -81,9 +81,9 @@ public class Level3 extends ScreenAdapter {
     private Bird firstBird;
     private ArrayList<Bird> birdsToRemove = new ArrayList<>();
 
-    private float birdInactiveTime = 0f; // Time the current bird has been inactive
-    private static final float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
-    private static final float VELOCITY_THRESHOLD = 0.1f; // Threshold for inactivity
+    private float birdInactiveTime = 0f;
+    private static final float INACTIVE_TIME_THRESHOLD = 2f;
+    private static final float VELOCITY_THRESHOLD = 0.1f;
 
 
     private float accumulator = 0;
@@ -256,7 +256,6 @@ public class Level3 extends ScreenAdapter {
                     if(!hasMoved){
                         isDragging = true;
                         dragStart.set(touchPoint);
-                        hasMoved = true;
                         return true;
                     }
                 }
@@ -265,7 +264,6 @@ public class Level3 extends ScreenAdapter {
                     if(!hasMoved){
                         isDragging = true;
                         dragStart.set(touchPoint);
-                        hasMoved = true;
                         return true;
                     }
                 }
@@ -288,6 +286,7 @@ public class Level3 extends ScreenAdapter {
                     dragEnd.set(stage.screenToStageCoordinates(new Vector2(screenX, screenY)));
                     applyTrajectoryForce();
                     isDragging = false;
+                    hasMoved = true;
                     return true;
                 }
                 return false;
@@ -417,7 +416,7 @@ public class Level3 extends ScreenAdapter {
 
             if (birdData.isActive) {
                 createBirdBody(bird);
-                birdBody.setLinearVelocity(birdData.velocity);
+//                birdBody.setLinearVelocity(birdData.velocity);
                 firstBird = bird;
             }
 
@@ -959,7 +958,7 @@ public class Level3 extends ScreenAdapter {
             );
 
             Vector2 velocity = birdBody.getLinearVelocity();
-            if (velocity.len() < VELOCITY_THRESHOLD) {
+            if (velocity.len() < VELOCITY_THRESHOLD && hasMoved) {
                 birdInactiveTime += delta;
                 System.out.println("Bird inactive time: " + birdInactiveTime);
             }

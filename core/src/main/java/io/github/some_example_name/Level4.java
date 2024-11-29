@@ -82,7 +82,7 @@ public class Level4 extends ScreenAdapter {
     private ArrayList<Bird> birdsToRemove = new ArrayList<>();
 
     private float birdInactiveTime = 0f;
-    private static final float INACTIVE_TIME_THRESHOLD = 3f;
+    private static final float INACTIVE_TIME_THRESHOLD = 2f;
     private static final float VELOCITY_THRESHOLD = 0.1f;
 
 
@@ -177,7 +177,7 @@ public class Level4 extends ScreenAdapter {
 
         birds.add(new Bird("bird1.png", 100, 100, 8));
         birds.add(new Bird("bird1.png", 100, 100, 8));
-        birds.add(new Bird("shake_bird.png", 100, 100, 10));
+        birds.add(new Bird("shake_bird.png", 100, 100, 20));
 
         firstBird = birds.get(currentBirdIndex);
         stage.addActor(firstBird.getImage());
@@ -258,17 +258,14 @@ public class Level4 extends ScreenAdapter {
                     if(!hasMoved){
                         isDragging = true;
                         dragStart.set(touchPoint);
-                        hasMoved = true;
                         return true;
                     }
                 }
-
 
                 if (isWithinCustomArea(touchPoint)) {
                     if(!hasMoved){
                         isDragging = true;
                         dragStart.set(touchPoint);
-                        hasMoved = true;
                         return true;
                     }
                 }
@@ -292,6 +289,7 @@ public class Level4 extends ScreenAdapter {
                     dragEnd.set(stage.screenToStageCoordinates(new Vector2(screenX, screenY)));
                     applyTrajectoryForce();
                     isDragging = false;
+                    hasMoved = true;
                     return true;
                 }
                 return false;
@@ -422,7 +420,7 @@ public class Level4 extends ScreenAdapter {
 
             if (birdData.isActive) {
                 createBirdBody(bird);
-                birdBody.setLinearVelocity(birdData.velocity);
+//                birdBody.setLinearVelocity(birdData.velocity);
                 firstBird = bird;
             }
 
@@ -726,7 +724,7 @@ public class Level4 extends ScreenAdapter {
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 0.7f;
         if(bird.getTexturePath().equalsIgnoreCase("shake_bird.png")){
-            fixtureDef.density = 1.4f;
+            fixtureDef.density = 5f;
         }
 
         Fixture fixture = birdBody.createFixture(fixtureDef);
@@ -1000,7 +998,7 @@ public class Level4 extends ScreenAdapter {
             }
 
             Vector2 velocity = birdBody.getLinearVelocity();
-            if (velocity.len() < VELOCITY_THRESHOLD) {
+            if (velocity.len() < VELOCITY_THRESHOLD && hasMoved) {
                 birdInactiveTime += delta;
                 System.out.println("Bird inactive time: " + birdInactiveTime);
             }

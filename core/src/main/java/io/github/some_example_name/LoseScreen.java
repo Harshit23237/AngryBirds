@@ -78,7 +78,7 @@ public class LoseScreen extends ScreenAdapter {
 
         loseMusic = Gdx.audio.newMusic(Gdx.files.internal("loss_music.mp3"));
         loseMusic.setLooping(true);
-        loseMusic.setVolume(0.4f);
+        loseMusic.setVolume(0.1f);
         loseMusic.play();
 
 

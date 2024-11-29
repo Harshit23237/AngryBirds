@@ -82,9 +82,9 @@ public class Level2 extends ScreenAdapter {
     private Bird firstBird;
     private ArrayList<Bird> birdsToRemove = new ArrayList<>();
 
-    private float birdInactiveTime = 0f; // Time the current bird has been inactive
-    private float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
-    private static final float VELOCITY_THRESHOLD = 0.1f; // Threshold for inactivity
+    private float birdInactiveTime = 0f;
+    private float INACTIVE_TIME_THRESHOLD = 2f;
+    private static final float VELOCITY_THRESHOLD = 0.1f;
 
 
     private float accumulator = 0;
@@ -157,7 +157,7 @@ public class Level2 extends ScreenAdapter {
     public Level2(Game game){
         this.game = game;
         System.out.println("LEVEL 2 ENTERED");
-        GRAVITY = new Vector2(0,-18);
+        GRAVITY = new Vector2(0,-20);
         shapeRenderer = new ShapeRenderer();
 //        levelPage = new LevelPage(game);
 //        overlayPause = new OverlayPause(levelPage, game);
@@ -178,9 +178,9 @@ public class Level2 extends ScreenAdapter {
         birds = new ArrayList<>();
         currentBirdIndex = 0;
 
-        birds.add(new Bird("bird1.png", 100, 100, 14));
-        birds.add(new Bird("bird1.png", 100, 100, 14));
-        birds.add(new Bird("green_bird.png", 100, 100, 8));
+        birds.add(new Bird("bird1.png", 100, 100, 12));
+        birds.add(new Bird("bird1.png", 100, 100, 12));
+        birds.add(new Bird("green_bird.png", 100, 100, 15));
 
         firstBird = birds.get(currentBirdIndex);
         stage.addActor(firstBird.getImage());
@@ -264,7 +264,6 @@ public class Level2 extends ScreenAdapter {
                     if(!hasMoved){
                         isDragging = true;
                         dragStart.set(touchPoint);
-                        hasMoved = true;
                         return true;
                     }
                 }
@@ -273,7 +272,6 @@ public class Level2 extends ScreenAdapter {
                     if(!hasMoved){
                         isDragging = true;
                         dragStart.set(touchPoint);
-                        hasMoved = true;
                         return true;
                     }
                 }
@@ -296,6 +294,7 @@ public class Level2 extends ScreenAdapter {
                     dragEnd.set(stage.screenToStageCoordinates(new Vector2(screenX, screenY)));
                     applyTrajectoryForce();
                     isDragging = false;
+                    hasMoved = true;
                     return true;
                 }
                 return false;
@@ -347,7 +346,7 @@ public class Level2 extends ScreenAdapter {
 
             if (birdData.isActive) {
                 createBirdBody(bird);
-                birdBody.setLinearVelocity(birdData.velocity);
+//                birdBody.setLinearVelocity(birdData.velocity);
                 firstBird = bird;
             }
 
@@ -845,7 +844,7 @@ public class Level2 extends ScreenAdapter {
             if(currentBird.getTexturePath().equalsIgnoreCase("green_bird.png")){
                 System.out.println("gravity is now up");
                 GRAVITY = new Vector2(0,10);
-                INACTIVE_TIME_THRESHOLD = 5f;
+//                INACTIVE_TIME_THRESHOLD = 5f;
                 createGroundBody(1920, 145, 400, 100);
                 createGroundBody(0, 0, 1980, 180);
                 if(birdInactiveTime >= 3 && birdInactiveTime <= 3.2){
@@ -854,12 +853,12 @@ public class Level2 extends ScreenAdapter {
                 world.setGravity(GRAVITY);
             }
             else{
-                GRAVITY = new Vector2(0,-18);
+                GRAVITY = new Vector2(0,-20);
                 world.setGravity(GRAVITY);
             }
 
             Vector2 velocity = birdBody.getLinearVelocity();
-            if (velocity.len() < VELOCITY_THRESHOLD) {
+            if (velocity.len() < VELOCITY_THRESHOLD && hasMoved) {
                 birdInactiveTime += delta;
                 System.out.println("Bird inactive time: " + birdInactiveTime);
             } else {

@@ -279,7 +279,7 @@ public class BonusLevel extends ScreenAdapter {
     }
 
     private boolean isWithinCustomArea(Vector2 touchPoint) {
-        float customX = 500;
+        float customX = 450;
         float customY = 500;
         float width = 300;
         float height = 300;

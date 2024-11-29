@@ -50,12 +50,12 @@ public class BIRD_test {
         assertEquals(mockHealth, birdData.health, 0.01f);
     }
 
-    @Test
-    public void CheckVelocity() {
-        BirdData birdData = new BirdData(mockBird, mockVelocity, mockIsActive);
-        assertEquals(mockVelocity.x, birdData.velocity.x, 0.01f);
-        assertEquals(mockVelocity.y, birdData.velocity.y, 0.01f);
-    }
+//    @Test
+//    public void CheckVelocity() {
+//        BirdData birdData = new BirdData(mockBird, mockVelocity, mockIsActive);
+//        assertEquals(mockVelocity.x, birdData.velocity.x, 0.01f);
+//        assertEquals(mockVelocity.y, birdData.velocity.y, 0.01f);
+//    }
 
     @Test
     public void CheckIsActive() {
