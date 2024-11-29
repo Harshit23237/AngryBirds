@@ -30,8 +30,7 @@ public class Level3 extends ScreenAdapter {
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
-    private static final float FPS = 90f;
-    private static final float PPM = 100f; // Pixels Per Meter
+    private static final float FPS = 120f;
 
     private Stage stage;
     private SpriteBatch batch;
@@ -100,6 +99,7 @@ public class Level3 extends ScreenAdapter {
     private Texture loadButtonTexture;
     private ImageButton loadButton;
 
+    private Boolean hasMoved = false;
     private Music epic_music;
 
 
@@ -253,15 +253,21 @@ public class Level3 extends ScreenAdapter {
                 Vector2 touchPoint = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
 
                 if (firstBird.getImage().hit(touchPoint.x-300, touchPoint.y-330, true) != null) {
-                    isDragging = true;
-                    dragStart.set(touchPoint);
-                    return true;
+                    if(!hasMoved){
+                        isDragging = true;
+                        dragStart.set(touchPoint);
+                        hasMoved = true;
+                        return true;
+                    }
                 }
 
                 if (isWithinCustomArea(touchPoint)) {
-                    isDragging = true;
-                    dragStart.set(touchPoint);
-                    return true;
+                    if(!hasMoved){
+                        isDragging = true;
+                        dragStart.set(touchPoint);
+                        hasMoved = true;
+                        return true;
+                    }
                 }
 
                 return false;
@@ -270,7 +276,6 @@ public class Level3 extends ScreenAdapter {
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 if (isDragging) {
-                    // Update drag end position
                     dragEnd.set(stage.screenToStageCoordinates(new Vector2(screenX, screenY)));
                     return true;
                 }
@@ -862,6 +867,7 @@ public class Level3 extends ScreenAdapter {
         if (currentBird.isDestroyed()) {
             System.out.println("Current bird destroyed!");
             birdsToRemove.add(currentBird);
+            hasMoved = false;
 
         }
     }
@@ -884,9 +890,44 @@ public class Level3 extends ScreenAdapter {
         if (currentBird.isDestroyed()) {
             System.out.println("Current bird destroyed!");
             birdsToRemove.add(currentBird);
-
+            hasMoved = false;
         }
     }
+
+    private void DrawTrajectory(){
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(0, 0, 1, 1); // Green trajectory line
+
+        Vector2 initialVelocity = new Vector2(
+            -(dragEnd.x - dragStart.x) ,
+            -(dragEnd.y - dragStart.y)
+        );
+        Vector2 birdStartPosition = birdBody != null ? birdBody.getPosition() : new Vector2(250, 500);
+        Vector2 gravity = world.getGravity();
+        gravity.scl(2);
+
+        Vector2 currentPosition = new Vector2(birdStartPosition);
+        Vector2 velocity = new Vector2(initialVelocity);
+        float timeStep = 0.3f;
+        int maxSteps = 10;
+
+        for (int i = 0; i < maxSteps; i++) {
+            Vector2 nextPosition = new Vector2(
+                currentPosition.x + velocity.x * timeStep,
+                currentPosition.y + velocity.y * timeStep
+            );
+
+            shapeRenderer.circle(nextPosition.x, nextPosition.y, 5);
+            currentPosition.set(nextPosition);
+
+            velocity.add(gravity.x * timeStep, gravity.y * timeStep);
+
+        }
+
+        shapeRenderer.end();
+    }
+
 
 
 
@@ -900,8 +941,8 @@ public class Level3 extends ScreenAdapter {
             if(currentBirdIndex == birds.size() - 1) {
                 epic_music = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
                 epic_music.setLooping(true);
+                epic_music.setVolume(0.01f);
                 epic_music.play();
-                epic_music.setVolume(0.2f);
             }
         }
 
@@ -990,17 +1031,18 @@ public class Level3 extends ScreenAdapter {
             }
         }
 
-        // Render drag line if dragging
         if (isDragging) {
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(1, 0, 0, 1);
-            shapeRenderer.line(
-                dragStart.x, dragStart.y,
-                dragEnd.x, dragEnd.y
-            );
-            shapeRenderer.end();
+//            shapeRenderer.setProjectionMatrix(camera.combined);
+//            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//            shapeRenderer.setColor(1, 0, 0, 1);
+//            shapeRenderer.line(
+//                dragStart.x, dragStart.y,
+//                dragEnd.x, dragEnd.y
+//            );
+//            shapeRenderer.end();
+            DrawTrajectory();
         }
+
 
         debugRenderer.render(world, camera.combined);
 
@@ -1043,6 +1085,7 @@ public class Level3 extends ScreenAdapter {
                 Bird nextBird = birds.get(currentBirdIndex);
                 stage.addActor(nextBird.getImage());
                 createBirdBody(nextBird);
+                hasMoved = false;
                 System.out.println("Switched to the next bird!");
             }
             else {

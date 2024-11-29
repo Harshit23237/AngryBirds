@@ -30,8 +30,7 @@ public class Level4 extends ScreenAdapter {
     float SCREEN_WIDTH = Gdx.graphics.getWidth();
     float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
-    private static final float FPS = 90f;
-    private static final float PPM = 100f; // Pixels Per Meter
+    private static final float FPS = 100f;
 
     private Stage stage;
     private SpriteBatch batch;
@@ -82,13 +81,13 @@ public class Level4 extends ScreenAdapter {
     private Bird firstBird;
     private ArrayList<Bird> birdsToRemove = new ArrayList<>();
 
-    private float birdInactiveTime = 0f; // Time the current bird has been inactive
-    private static final float INACTIVE_TIME_THRESHOLD = 3f; // 3 seconds
-    private static final float VELOCITY_THRESHOLD = 0.1f; // Threshold for inactivity
+    private float birdInactiveTime = 0f;
+    private static final float INACTIVE_TIME_THRESHOLD = 3f;
+    private static final float VELOCITY_THRESHOLD = 0.1f;
 
 
     private float accumulator = 0;
-    private static final float TIME_STEP = 1 / 120f; // Fixed 60 FPS time step
+    private static final float TIME_STEP = 1 / 180f; // Fixed 60 FPS time step
 
     private ArrayList<Body> bodiesToRemove = new ArrayList<>();
 
@@ -99,6 +98,8 @@ public class Level4 extends ScreenAdapter {
 
     private Texture loadButtonTexture;
     private ImageButton loadButton;
+
+    private Boolean hasMoved = false;
 
     private Music epic_music;
 
@@ -254,15 +255,22 @@ public class Level4 extends ScreenAdapter {
                 Vector2 touchPoint = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
 
                 if (firstBird.getImage().hit(touchPoint.x-300, touchPoint.y-330, true) != null) {
-                    isDragging = true;
-                    dragStart.set(touchPoint);
-                    return true;
+                    if(!hasMoved){
+                        isDragging = true;
+                        dragStart.set(touchPoint);
+                        hasMoved = true;
+                        return true;
+                    }
                 }
 
+
                 if (isWithinCustomArea(touchPoint)) {
-                    isDragging = true;
-                    dragStart.set(touchPoint);
-                    return true;
+                    if(!hasMoved){
+                        isDragging = true;
+                        dragStart.set(touchPoint);
+                        hasMoved = true;
+                        return true;
+                    }
                 }
 
                 return false;
@@ -869,6 +877,7 @@ public class Level4 extends ScreenAdapter {
         if (currentBird.isDestroyed()) {
             System.out.println("Current bird destroyed!");
             birdsToRemove.add(currentBird);
+            hasMoved = false;
 
         }
     }
@@ -891,7 +900,7 @@ public class Level4 extends ScreenAdapter {
         if (currentBird.isDestroyed()) {
             System.out.println("Current bird destroyed!");
             birdsToRemove.add(currentBird);
-
+            hasMoved = false;
         }
     }
 
@@ -1002,10 +1011,9 @@ public class Level4 extends ScreenAdapter {
             );
         }
 
-        // Physics step
         if (!showPause) {
             world.step(1 / FPS, 6, 2);
-            accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
+            accumulator += Math.min(delta, 0.25f);
 
             while (accumulator >= TIME_STEP) {
                 world.step(TIME_STEP, 6, 2);
@@ -1018,7 +1026,7 @@ public class Level4 extends ScreenAdapter {
         }
         else {
             world.step(1 / FPS, 6, 2);
-            accumulator += Math.min(delta, 0.25f); // Prevent spiral of death
+            accumulator += Math.min(delta, 0.25f);
 
             while (accumulator >= TIME_STEP) {
                 world.step(TIME_STEP, 6, 2);
@@ -1079,6 +1087,7 @@ public class Level4 extends ScreenAdapter {
                 Bird nextBird = birds.get(currentBirdIndex);
                 stage.addActor(nextBird.getImage());
                 createBirdBody(nextBird);
+                hasMoved = false;
                 System.out.println("Switched to the next bird!");
             }
             else {

@@ -117,7 +117,7 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
             }
         });
 
-        button_bonus = ImageButton_create("GameStart_bg.jpg", "GameStart_bg.jpg", 200,200, 0.5f, 0.5f );
+        button_bonus = ImageButton_create("bonus_box.png", "bonus_box.png", 200,200, 0.5f, 0.5f );
 
         button_bonus.addListener(new ClickListener() {
             @Override
@@ -177,18 +177,16 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
             batch.end();
 
 
-            Gdx.input.setInputProcessor(stage);     // Revert to main stage input
+            Gdx.input.setInputProcessor(stage);
             stage.act(delta);
             stage.draw();
 
             if (!showSettings) {
-                // If settings are not shown, set input to main stage and draw it
                 Gdx.input.setInputProcessor(stage);
                 stage.act(delta);
                 stage.draw();
             }
 
-            // If settings are shown, set input to the settingsOverlay stage and render it
             if (showSettings && settingsOverlay.isActive() ) {
                 //settingsOverlay.first_time=1;
                 Gdx.input.setInputProcessor(settingsOverlay.getStage());

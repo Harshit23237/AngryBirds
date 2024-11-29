@@ -262,9 +262,12 @@ public class Level2 extends ScreenAdapter {
                 Vector2 touchPoint = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
 
                 if (firstBird.getImage().hit(touchPoint.x-300, touchPoint.y-330, true) != null) {
-                    isDragging = true;
-                    dragStart.set(touchPoint);
-                    return true;
+                    if(!hasMoved){
+                        isDragging = true;
+                        dragStart.set(touchPoint);
+                        hasMoved = true;
+                        return true;
+                    }
                 }
 
                 if (isWithinCustomArea(touchPoint)) {
@@ -282,7 +285,6 @@ public class Level2 extends ScreenAdapter {
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 if (isDragging) {
-                    // Update drag end position
                     dragEnd.set(stage.screenToStageCoordinates(new Vector2(screenX, screenY)));
                     return true;
                 }
@@ -953,7 +955,8 @@ public class Level2 extends ScreenAdapter {
                 createBirdBody(nextBird);
                 hasMoved = false;
                 System.out.println("Switched to the next bird!");
-            } else {
+            }
+            else {
                 System.out.println("No more birds available! Game over or end level.");
 
                 if(pigs.isEmpty()){

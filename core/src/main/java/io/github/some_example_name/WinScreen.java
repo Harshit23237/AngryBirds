@@ -76,9 +76,9 @@ public class WinScreen extends ScreenAdapter {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        winMusic = Gdx.audio.newMusic(Gdx.files.internal("let_him_cook.mp3"));
+        winMusic = Gdx.audio.newMusic(Gdx.files.internal("win_music.mp3"));
         winMusic.setLooping(true);
-        winMusic.setVolume(0.01f);
+        winMusic.setVolume(0.4f);
         winMusic.play();
 
         // Add Exit Button
