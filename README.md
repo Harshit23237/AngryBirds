@@ -1,5 +1,6 @@
 # AngrierBirds
-Members- Harshit Dawra 2023237, Ruhani Bhatia 2023450
+Members- Harshit Dawra 2023237
+
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
 This project was generated with a template including simple application launchers and an `ScreenAdapter` extension that draws a simple GUI on the screen.
@@ -7,6 +8,24 @@ This project was generated with a template including simple application launcher
 
 ## HOW TO RUN: 
     Open the project in IDEA and run from there, using the Lwjgl3Launcher file in the lwjgl3 directory.
+
+## Bird Powers(Bonus):
+    1. LiftOff Bird:- A bird that has relatively higher health than normal birds, of same level and and levitate everything in the level (including itself)
+    2. Dark Lord Bird:- Can attract Blocks, and pigs towards itself, and has higher density, health compared to other normal birds of same level.
+
+## New Level(Bonus):
+    This level is upside down, and has 2 types of birds: 
+    1. Eagle Bird:- RRRAAAAHHHH! (Dont Keep Volume Low)
+    2. Dark Lord Bird
+
+## Assumptions:
+By Defauly All Levels have been unlocked, as some of them can be quite hard! 
+
+In the bonus Level, some of the things, have been omitted to make the game play different than usual.
+
+Wherever I found ambiguity, i have tried to take original game as refernces. For eg, I simply haven't given damage to blocks
+ if something below them blows up, as it was not looking good when implemented, mainly because, it leads to a simple win stratergy in all games,
+ that is we should aim for lowermost blocks in a structure to give damage to most amount of objects.
 
 ## Diagrams & Use Cases:
 Are present in the AngryBirds2027 Folder Itself as PDF files.
@@ -38,8 +57,6 @@ Are present in the AngryBirds2027 Folder Itself as PDF files.
         Settings Include the same options as mentioned in the Level Selection PAge.
 
     After Completing a Level, User Would be Taken to a Loss or Win Page. 
-        Where in Case of Win, User can click on Next, Quit Level.   
-        In case of Lose, User can click on retry, Quit.
     
     That Sums Up Our Game's GUI. 
 
