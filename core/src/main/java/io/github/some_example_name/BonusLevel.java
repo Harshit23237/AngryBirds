@@ -688,7 +688,7 @@ public class BonusLevel extends ScreenAdapter {
             shapeRenderer.end();
         }
 
-        debugRenderer.render(world, camera.combined);
+//        debugRenderer.render(world, camera.combined);
 
         for (Body body : bodiesToRemove) {
             blocks.remove(body);

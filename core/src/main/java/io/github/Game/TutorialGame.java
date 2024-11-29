@@ -148,22 +148,22 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
 
         // SETTINGS BUTTON
         settingsButton = ImageButton_create("settings_button.png", "settings_button.png", 100,98,0.5f,0.5f);
-        settingsButton.addListener(new ClickListener()
-        {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("clicked settings");
-//                showSettings = !showSettings;
-//                settingsOverlay.setActive(showSettings);
-                if (!settingsOverlay.isActive()) {
-                    showSettings = true;
-                    settingsOverlay.setActive(true);
-                }
-                System.out.println("returned from settings" );
-            }
-
-        });
-//        stage.addActor(settingsButton);
+//        settingsButton.addListener(new ClickListener()
+//        {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                System.out.println("clicked settings");
+//////                showSettings = !showSettings;
+//////                settingsOverlay.setActive(showSettings);
+////                if (!settingsOverlay.isActive()) {
+////                    showSettings = true;
+////                    settingsOverlay.setActive(true);
+////                }
+//                System.out.println("returned from settings" );
+//            }
+//
+//        });
+////        stage.addActor(settingsButton);
         settingsOverlay = new SettingsOverlay(game);
 
 
@@ -221,7 +221,7 @@ public class TutorialGame extends ScreenAdapter {//pages directed (load game,
         button_lvl2.setPosition(Gdx.graphics.getWidth() * 0.50f - button_lvl2.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - button_lvl2.getHeight() *0.5f);
         button_lvl3.setPosition(Gdx.graphics.getWidth() * 0.75f - button_lvl3.getWidth()*0.5f, Gdx.graphics.getHeight() *0.6f - button_lvl3.getHeight() *0.5f);
         button_bonus.setPosition(Gdx.graphics.getWidth() * 0.5f - button_bonus.getWidth()*0.5f, Gdx.graphics.getHeight() *0.3f - button_bonus.getHeight() *0.5f);
-        settingsButton.setPosition(Gdx.graphics.getWidth() * 0.2f - settingsButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0.11f - settingsButton.getHeight() *0.5f);
+        settingsButton.setPosition(Gdx.graphics.getWidth() * 0f - settingsButton.getWidth()*0.5f, Gdx.graphics.getHeight() *0f - settingsButton.getHeight() *0.5f);
         back_button.setPosition(Gdx.graphics.getWidth() * 0.1f - back_button.getWidth()*0.5f, Gdx.graphics.getHeight() *0.1f - back_button.getHeight() *0.5f);
 
     }

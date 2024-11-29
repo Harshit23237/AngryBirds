@@ -938,7 +938,7 @@ public class Level2 extends ScreenAdapter {
             DrawTrajectory();
         }
 
-        debugRenderer.render(world, camera.combined);
+//        debugRenderer.render(world, camera.combined);
 
         for (Body body : bodiesToRemove) {
             blocks.remove(body);

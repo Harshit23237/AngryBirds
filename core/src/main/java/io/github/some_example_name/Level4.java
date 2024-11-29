@@ -713,7 +713,7 @@ public class Level4 extends ScreenAdapter {
     private void createBirdBody(Bird bird) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(330 , 400);
+        bodyDef.position.set(350 , 400);
 
         birdBody = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
@@ -1074,7 +1074,7 @@ public class Level4 extends ScreenAdapter {
             DrawTrajectory();
         }
 
-        debugRenderer.render(world, camera.combined);
+//        debugRenderer.render(world, camera.combined);
 
         for (Body body : bodiesToRemove) {
             blocks.remove(body);

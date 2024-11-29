@@ -174,9 +174,9 @@ public class Level3 extends ScreenAdapter {
         birds = new ArrayList<>();
         currentBirdIndex = 0;
 
-        birds.add(new Bird("bird1.png", 100, 100, 10));
-        birds.add(new Bird("bird1.png", 100, 100, 10));
-        birds.add(new Bird("bird1.png", 100, 100, 10));
+        birds.add(new Bird("bird1.png", 100, 100, 12));
+        birds.add(new Bird("bird1.png", 100, 100, 12));
+        birds.add(new Bird("bird1.png", 100, 100, 12));
 
         firstBird = birds.get(currentBirdIndex);
         stage.addActor(firstBird.getImage());
@@ -713,7 +713,7 @@ public class Level3 extends ScreenAdapter {
 //        circleShape.setRadius(bird.getWidth()/2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
-        fixtureDef.density = 1f;
+        fixtureDef.density = 3f;
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 0.7f;
 
@@ -744,10 +744,13 @@ public class Level3 extends ScreenAdapter {
         Fixture fixture = pigBody.createFixture(fixtureDef);
         Pig pig = null;
         System.out.print("OBJECT ID: "+obj.getProperties().get("id") + "\t");
-        if (obj.getProperties().get("pig_id").equals("1") || obj.getProperties().get("pig_id").equals("2")  ){
+        if (obj.getProperties().get("pig_id").equals("1") ){
             System.out.println("PIG 1");
             Integer WOOD_HEALTH = 1;
             pig = new Pig("pig2.png", rect.x, rect.y, rect.width, rect.height, WOOD_HEALTH );
+        }
+        else if (obj.getProperties().get("pig_id").equals("2")){
+            pig = new Pig("pig3.png", rect.x, rect.y, rect.width, rect.height, 2 );
         }
         else if( obj.getProperties().get("pig_id").equals("3") ){
             System.out.println("PIG 2");
@@ -1031,7 +1034,7 @@ public class Level3 extends ScreenAdapter {
         }
 
 
-        debugRenderer.render(world, camera.combined);
+//        debugRenderer.render(world, camera.combined);
 
         for (Body body : bodiesToRemove) {
             blocks.remove(body);
